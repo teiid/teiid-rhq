@@ -7,7 +7,7 @@
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>teiid-console</artifactId>
+	<artifactId>teiid-rhq-plugin</artifactId>
 	<name>Console</name>
 	<description>This project is for the RHQ plugin that supports the TEIID Console </description>
 

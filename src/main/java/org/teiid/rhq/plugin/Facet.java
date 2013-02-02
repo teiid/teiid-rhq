@@ -850,23 +850,23 @@ public abstract class Facet extends BaseComponent<BaseComponent<?>> implements
         return null; //new RemoteDeployer(profileServiceConnection, this.resourceContext);
     }
 
-	private static String getResourceName(Configuration pluginConfig,
-			Configuration resourceConfig) {
-		PropertySimple resourceNameProp = pluginConfig
-				.getSimple(TranslatorComponent.Config.RESOURCE_NAME);
-		if (resourceNameProp == null
-				|| resourceNameProp.getStringValue() == null)
-			throw new IllegalStateException("Property [" //$NON-NLS-1$
-					+ TranslatorComponent.Config.RESOURCE_NAME
-					+ "] is not defined in the default plugin configuration."); //$NON-NLS-1$
-		String resourceNamePropName = resourceNameProp.getStringValue();
-		PropertySimple propToUseAsResourceName = resourceConfig
-				.getSimple(resourceNamePropName);
-		if (propToUseAsResourceName == null)
-			throw new IllegalStateException("Property [" + resourceNamePropName //$NON-NLS-1$
-					+ "] is not defined in initial Resource configuration."); //$NON-NLS-1$
-		return propToUseAsResourceName.getStringValue();
-	}
+//	private static String getResourceName(Configuration pluginConfig,
+//			Configuration resourceConfig) {
+//		PropertySimple resourceNameProp = pluginConfig
+//				.getSimple(TranslatorComponent.Config.RESOURCE_NAME);
+//		if (resourceNameProp == null
+//				|| resourceNameProp.getStringValue() == null)
+//			throw new IllegalStateException("Property [" //$NON-NLS-1$
+//					+ TranslatorComponent.Config.RESOURCE_NAME
+//					+ "] is not defined in the default plugin configuration."); //$NON-NLS-1$
+//		String resourceNamePropName = resourceNameProp.getStringValue();
+//		PropertySimple propToUseAsResourceName = resourceConfig
+//				.getSimple(resourceNamePropName);
+//		if (propToUseAsResourceName == null)
+//			throw new IllegalStateException("Property [" + resourceNamePropName //$NON-NLS-1$
+//					+ "] is not defined in initial Resource configuration."); //$NON-NLS-1$
+//		return propToUseAsResourceName.getStringValue();
+//	}
 
 //	private String getResourceKey(ResourceType resourceType, String resourceName) {
 //		ComponentType componentType = ProfileServiceUtil

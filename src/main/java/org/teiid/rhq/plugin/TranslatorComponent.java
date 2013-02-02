@@ -21,6 +21,8 @@
  */
 package org.teiid.rhq.plugin;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -36,11 +38,16 @@ import org.rhq.core.domain.configuration.PropertySimple;
 import org.rhq.core.domain.measurement.MeasurementDataNumeric;
 import org.rhq.core.domain.measurement.MeasurementReport;
 import org.rhq.core.domain.measurement.MeasurementScheduleRequest;
+import org.rhq.core.pluginapi.inventory.DiscoveredResourceDetails;
 import org.rhq.core.pluginapi.inventory.ResourceContext;
 import org.rhq.core.pluginapi.measurement.MeasurementFacet;
 import org.rhq.modules.plugins.jbossas7.ASConnection;
+import org.rhq.modules.plugins.jbossas7.json.Address;
+import org.rhq.modules.plugins.jbossas7.json.Operation;
+import org.rhq.modules.plugins.jbossas7.json.Result;
 import org.teiid.rhq.plugin.util.PluginConstants;
 import org.teiid.rhq.plugin.util.DmrUtil;
+import org.teiid.rhq.plugin.util.PluginConstants.ComponentType.Platform;
 
 /**
  * Component class for the Teiid Translator.
@@ -48,14 +55,13 @@ import org.teiid.rhq.plugin.util.DmrUtil;
  */
 public class TranslatorComponent extends Facet {
 	private final Log LOG = LogFactory.getLog(PluginConstants.DEFAULT_LOGGER_CATEGORY);
-
-	public static interface Config {
-		String COMPONENT_TYPE = "componentType";
-		String COMPONENT_SUBTYPE = "componentSubtype";
-		String COMPONENT_NAME = "componentName";
-		String TEMPLATE_NAME = "template-name";
-		String RESOURCE_NAME = "resourceName";
-	}
+	
+	public static final String TRANSLATORNAME = "translator-name"; //$NON-NLS-1$
+	public static final String DESCRIPTION = "translator-description"; //$NON-NLS-1$
+	public static final String MODULENAME = "module-name"; //$NON-NLS-1$
+	public static final String PROPERTIES = "properties"; //$NON-NLS-1$
+	public static final String PROPERTYNAME = "property-name"; //$NON-NLS-1$
+	public static final String PROPERTYVALUE = "property-value"; //$NON-NLS-1$
 
 	@Override
 	public void start(ResourceContext context) {
@@ -114,63 +120,54 @@ public class TranslatorComponent extends Facet {
 	@Override
 	public Configuration loadResourceConfiguration() {
 
-//		ManagedComponent translator = null;
-//		try {
-//			translator = ProfileServiceUtil
-//			.getManagedComponent(getASConnection(), new ComponentType(
-//					PluginConstants.ComponentType.Translator.TYPE,
-//					PluginConstants.ComponentType.Translator.SUBTYPE), this.name);
-//		} catch (NamingException e) {
-//			final String msg = "NamingException in loadResourceConfiguration(): " + e.getExplanation(); //$NON-NLS-1$
-//			LOG.error(msg, e);
-//		} catch (Exception e) {
-//			final String msg = "Exception in loadResourceConfiguration(): " + e.getMessage(); //$NON-NLS-1$
-//			LOG.error(msg, e);
-//		}
-//		
-//		String translatorName = ProfileServiceUtil.getSimpleValue(	translator, "name", String.class);
-//		String description = ProfileServiceUtil.getSimpleValue(	translator, "description", String.class);
+		Address addr = DmrUtil.getTeiidAddress();
+		Operation op = new Operation(Platform.Operations.lIST_TRANSLATORS, addr);
+		Result result = getASConnection().execute(op);
+		ArrayList<LinkedHashMap<String, Object>> translatorlist = (ArrayList<LinkedHashMap<String, Object>>) result.getResult();
+		Configuration configuration = null;
 
-		Configuration c = resourceConfiguration;
-		PropertyList list = new PropertyList("translatorList");
-		PropertyMap propMap = null;
-		c.put(list);
+		//Iterate through Translators
+		for (LinkedHashMap<String, Object> map : translatorlist) {
+			
+			String translatorKey = (String) map.get(TranslatorComponent.TRANSLATORNAME);
+			String translatorName = translatorKey;
+			String moduleType =  (String) map.get(TranslatorComponent.MODULENAME);;
+			String description = (String) map.get(TranslatorComponent.DESCRIPTION);
 
-//		// First get translator specific properties
-//		ManagedProperty translatorProps = translator.getProperty("property");
-//		try {
-//			getTranslatorValues(translatorProps.getValue(), propMap, list);
-//		} catch (Exception e) {
-//			throw new RuntimeException(e.getMessage());
-//		}
-//
-//		// Now get common properties
-//		c.put(new PropertySimple("name", translatorName));
-//		c.put(new PropertySimple("description", description));
-		
-		return c;
+			// Get plugin config map for translators
+			configuration = resourceContext.getPluginConfiguration();
+
+			//Set common properties
+			configuration.put(new PropertySimple("name", translatorName));//$NON-NLS-1$
+			configuration.put(new PropertySimple("moduleName",moduleType));//$NON-NLS-1$	
+			configuration.put(new PropertySimple("description",description));//$NON-NLS-1$	
+			
+			 // Add to return values
+			// First get translator specific properties
+			ArrayList<Map<String,String>> translatorProps = (ArrayList<Map<String, String>>) map.get(TranslatorComponent.PROPERTIES);
+			PropertyList list = new PropertyList("translatorList");//$NON-NLS-1$
+			PropertyMap propMap = null;
+			getTranslatorValues(translatorProps, propMap, list);
+		    configuration.put(list);
+			
+		}
+			
+		return configuration;
 
 	}
 	
-//	public static <T> void getTranslatorValues(MetaValue pValue,
-//			PropertyMap map, PropertyList list) throws Exception {
-//		MetaType metaType = pValue.getMetaType();
-//		MapCompositeValueSupport unwrappedvalueMap = null;
-//		if (metaType.isComposite()) {
-//			unwrappedvalueMap = (MapCompositeValueSupport) pValue;
-//
-//			for (String key : unwrappedvalueMap.getMetaType().keySet()) {
-//				map = new PropertyMap("property");
-//				map.put(new PropertySimple("name", key));
-//				map.put(new PropertySimple("value", ProfileServiceUtil.stringValue((MetaValue)unwrappedvalueMap.get(key))));
-//				map.put(new PropertySimple("description", "Custom property"));
-//				list.add(map);
-//			}
-//		} else {
-//			throw new IllegalStateException(pValue + " is not a Composite type");
-//		}
-//
-//	}
+	public static <T> void getTranslatorValues(ArrayList<Map<String,String>> propertyList,
+			PropertyMap map, PropertyList list) {
+			for (Map propertyMap: propertyList) {
+				String key = (String) propertyMap.get(TranslatorComponent.PROPERTYNAME);
+				String value = (String) propertyMap.get(TranslatorComponent.PROPERTYVALUE);
+				map = new PropertyMap("properties");//$NON-NLS-1$
+				map.put(new PropertySimple("name", key));//$NON-NLS-1$
+				map.put(new PropertySimple("value", value));//$NON-NLS-1$
+				list.add(map);
+			}
+
+	}
 
 	@Override
 	public ASConnection getASConnection() {

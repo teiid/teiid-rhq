@@ -65,7 +65,7 @@
 
 
 
-<plugin name="TeiidPlugin" displayName="Teiid Plugin" package="org.teiid.rhq.plugin"
+<plugin name="Teiid" displayName="Teiid Plugin" package="org.teiid.rhq.plugin"
 	version="3.0.0" description="Supports management and monitoring of JBoss Teiid"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:xmlns:rhq-plugin"
 	xmlns:c="urn:xmlns:rhq-configuration">
@@ -768,7 +768,7 @@
 								readOnly="true" />
 							<c:simple-property name="type" displayName="Translator type"
 								description="Translator type" required="false" readOnly="true" />
-							<c:simple-property name="type" displayName="Module Name"
+							<c:simple-property name="moduleName" displayName="Module Name"
 								description="Module Name" required="false" readOnly="true" />
 							<c:simple-property name="propertyName"
 								displayName="Property Name" description="Property Name"
@@ -880,6 +880,8 @@
 			<resource-configuration>
 				<c:simple-property name="name" displayName="Name"
 					description="Name of the translator" readOnly="true" required="false" />
+				<c:simple-property name="moduleName" displayName="Module Name"
+					description="Name of the module used by the translator" readOnly="true" required="false" />
 				<c:simple-property name="description" displayName="Description"
 					description="Description the translator" readOnly="true" required="false" />
 

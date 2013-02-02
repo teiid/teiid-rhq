@@ -21,7 +21,10 @@
  */
 package org.teiid.rhq.plugin;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -35,9 +38,12 @@ import org.rhq.core.pluginapi.inventory.InvalidPluginConfigurationException;
 import org.rhq.core.pluginapi.inventory.ResourceDiscoveryComponent;
 import org.rhq.core.pluginapi.inventory.ResourceDiscoveryContext;
 import org.rhq.modules.plugins.jbossas7.ASConnection;
-import org.teiid.core.util.ApplicationInfo;
+import org.rhq.modules.plugins.jbossas7.json.Address;
+import org.rhq.modules.plugins.jbossas7.json.Operation;
+import org.rhq.modules.plugins.jbossas7.json.Result;
 import org.teiid.rhq.plugin.util.PluginConstants;
 import org.teiid.rhq.plugin.util.DmrUtil;
+import org.teiid.rhq.plugin.util.PluginConstants.ComponentType.Platform;
 
 /**
  * Discovery component for Teiid Translator instances
@@ -53,77 +59,43 @@ public class TranslatorDiscoveryComponent implements ResourceDiscoveryComponent 
 		Set<DiscoveredResourceDetails> discoveredResources = new HashSet<DiscoveredResourceDetails>();
 		ASConnection connection = ((PlatformComponent) discoveryContext
 				.getParentResourceComponent()).getASConnection();
+		
+		Address addr = DmrUtil.getTeiidAddress();
+		Operation op = new Operation(Platform.Operations.lIST_TRANSLATORS, addr);
+		Result result = connection.execute(op);
+		ArrayList<LinkedHashMap<String, Object>> translatorlist = (ArrayList<LinkedHashMap<String, Object>>) result.getResult();
 	
-//		Set<ManagedComponent> translators = ProfileServiceUtil
-//				.getManagedComponents(connection, new ComponentType(
-//						PluginConstants.ComponentType.Translator.TYPE,
-//						PluginConstants.ComponentType.Translator.SUBTYPE));
-//
-//		for (ManagedComponent translator : translators) {
-//
-//			String translatorKey = translator.getName();
-//			String translatorName = ProfileServiceUtil.getSimpleValue(translator, "name", String.class); //$NON-NLS-1$
-//			String description = ProfileServiceUtil.getSimpleValue(translator, "description", String.class); //$NON-NLS-1$
-//			
-//			/**
-//			 * 
-//			 * A discovered resource must have a unique key, that must stay the
-//			 * same when the resource is discovered the next time
-//			 */
-//			DiscoveredResourceDetails detail = new DiscoveredResourceDetails(
-//					discoveryContext.getResourceType(), // ResourceType
-//					translatorKey, // Resource Key
-//					translatorName, // Resource Name
-//					ApplicationInfo.getInstance().getReleaseNumber(), // Version
-//					description, // Description
-//					discoveryContext.getDefaultPluginConfiguration(), // Plugin config
-//					null // Process info from a process scan
-//			);
-//
-//			// Get plugin config map for models
-//			Configuration configuration = detail.getPluginConfiguration();
-//
-//			configuration.put(new PropertySimple("name", translatorName));//$NON-NLS-1$
-//			detail.setPluginConfiguration(configuration);
-//			
-//			 // Add to return values
-//			// First get translator specific properties
-//			ManagedProperty translatorProps = translator.getProperty("property");//$NON-NLS-1$
-//			PropertyList list = new PropertyList("translatorList");//$NON-NLS-1$
-//			PropertyMap propMap = null;
-//			getTranslatorValues(translatorProps.getValue(), propMap, list);
-//
-//			// Now get common properties
-//			configuration.put(new PropertySimple("name", translatorName));//$NON-NLS-1$
-//			configuration.put(new PropertySimple("type",ProfileServiceUtil.getSimpleValue(translator,"type", String.class)));//$NON-NLS-1$ //$NON-NLS-2$
-//
-//			detail.setPluginConfiguration(configuration);
-//			// Add to return values
-//			discoveredResources.add(detail);
-//			log.debug("Discovered Teiid Translator: " + translatorName);
-//		}
+
+		//Iterate through VDBs
+		for (LinkedHashMap<String, Object> map : translatorlist) {
+			
+			String translatorKey = (String) map.get(TranslatorComponent.TRANSLATORNAME);
+			String translatorName = translatorKey;
+			String moduleType =  (String) map.get(TranslatorComponent.MODULENAME);;
+			String description = (String) map.get(TranslatorComponent.DESCRIPTION);
+
+			/**
+			 * 
+			 * A discovered resource must have a unique key, that must stay the
+			 * same when the resource is discovered the next time
+			 */
+			//TODO: Figure out version
+			DiscoveredResourceDetails detail = new DiscoveredResourceDetails(
+					discoveryContext.getResourceType(), // ResourceType
+					translatorKey, // Resource Key
+					translatorName, // Resource Name
+					"1.0", // Version
+					description, // Description
+					discoveryContext.getDefaultPluginConfiguration(), // Plugin config
+					null // Process info from a process scan
+			);
+
+			// Add to return values
+			discoveredResources.add(detail);
+			log.debug("Discovered Teiid Translator: " + translatorName);
+		}
 
 		return discoveredResources;
 	}
-
-
-//	public static <T> void getTranslatorValues(MetaValue pValue,
-//			PropertyMap map, PropertyList list) throws Exception {
-//		MetaType metaType = pValue.getMetaType();
-//		MapCompositeValueSupport unwrappedvalue = null;
-//		if (metaType.isComposite()) {
-//			unwrappedvalue = (MapCompositeValueSupport)pValue;
-//
-//			for (String key : unwrappedvalue.getMetaType().keySet()) {
-//				map = new PropertyMap("properties");//$NON-NLS-1$
-//				map.put(new PropertySimple("name", key));//$NON-NLS-1$
-//				map.put(new PropertySimple("value", ProfileServiceUtil.stringValue((MetaValue)unwrappedvalue.get(key))));//$NON-NLS-1$
-//				list.add(map);
-//			}
-//		} else {
-//			throw new IllegalStateException(pValue + " is not a Composite type");
-//		}
-//
-//	}
 
 }
