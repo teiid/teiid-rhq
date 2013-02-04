@@ -45,35 +45,45 @@
 	<developers>
 		<developer>
 			<name>Ted Jones</name>
-			<id>tejones</id>
+			<id>ted</id>
 			<email>tejones@redhat.com</email>
-			<organization>JBoss, a division of Red Hat</organization>
+			<organization>Red Hat</organization>
 			<roles>
 				<role>Project Lead</role>
+			</roles>
+			<timezone>-6</timezone>
+		</developer>
+		<developer>
+			<name>Steve Hawkins</name>
+			<id>steve</id>
+			<email>shawkins@redhat.com</email>
+			<organization>Red Hat</organization>
+			<roles>
 				<role>Developer</role>
 			</roles>
 			<timezone>-6</timezone>
 		</developer>
 		<developer>
 			<name>Ramesh Reddy</name>
-			<id>ra</id>
-			<email>tejones@redhat.com</email>
-			<organization>JBoss, a division of Red Hat</organization>
+			<id>ramesh</id>
+			<email>rareddy@redhat.com</email>
+			<organization>Red Hat</organization>
 			<roles>
 				<role>Developer</role>
 			</roles>
 			<timezone>-6</timezone>
 		</developer>
 		<developer>
-			<name>Daniel Florian</name>
-			<id>danflo</id>
-			<email>dflorian@redhat.com</email>
-			<organization>JBoss, a division of Red Hat</organization>
+			<name>Van Halbert</name>
+			<id>van</id>
+			<email>vhalbert@redhat.com</email>
+			<organization>Red Hat</organization>
 			<roles>
 				<role>Developer</role>
 			</roles>
-			<timezone>-5</timezone>
+			<timezone>-6</timezone>
 		</developer>
+		
 	</developers>
 
 	<properties>
