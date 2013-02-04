@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Built-By: tejones
+Build-Jdk: 1.6.0_37
+Specification-Title: Teiid RHQ Plugin
+Specification-Version: 1.0.0-SNAPSHOT
+Specification-Vendor: JBoss, a division of Red Hat
+Implementation-Title: Teiid RHQ Plugin
+Implementation-Version: 1.0.0-SNAPSHOT
+Implementation-Vendor-Id: org.jboss.teiid.rhq
+Implementation-Vendor: JBoss, a division of Red Hat
+Build-Timestamp: 
+Created-By: Maven Integration for Eclipse
+Implementation-URL: http://www.jboss.org/teiid/teiid-rhq-plugin
+Java-Vendor: Apple Inc.
+Java-Version: 1.6.0_37
+Os-Arch: x86_64
+Os-Name: Mac OS X
+Os-Version: 10.7.5
+Scm-Connection: scm:git:git://github.com/teiid/teiid-rhq.git/teiid-rhq
+ -plugin
+Scm-Revision: 
+Scm-Url: http://github.com/teiid/teiid-rhq/teiid-rhq-plugin
+
