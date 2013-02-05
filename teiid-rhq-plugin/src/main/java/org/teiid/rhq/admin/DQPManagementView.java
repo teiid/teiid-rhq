@@ -75,6 +75,10 @@ public class DQPManagementView implements PluginConstants {
 	private static final String SCOPE = "scope"; //$NON-NLS-1$
 	private static final String ASSOCIATED_SESSION = "associatedSession"; //$NON-NLS-1$
 	
+	//Cache fields
+	private static final String QUERY_SERVICE_RESULT_SET_CACHE = "QUERY_SERVICE_RESULT_SET_CACHE";  //$NON-NLS-1$
+	private static final String PREPARED_PLAN_CACHE = "PREPARED_PLAN_CACHE";  //$NON-NLS-1$
+
 	public DQPManagementView() {
 	}
 
@@ -104,19 +108,17 @@ public class DQPManagementView implements PluginConstants {
 		} else if (metric.equals(PluginConstants.ComponentType.Platform.Metrics.SESSION_COUNT)) {
 			resultObject = new Double(getSessionCount(connection).doubleValue());
 		} else if (metric.equals(PluginConstants.ComponentType.Platform.Metrics.LONG_RUNNING_QUERIES)) {
-			Collection<RequestMetadata> longRunningQueries = new ArrayList<RequestMetadata>();
-			getRequestCollectionValue(getLongRunningQueries(connection),	longRunningQueries);
-			resultObject = new Double(longRunningQueries.size());
+			resultObject = new Double(getLongRunningQueryCount(connection).doubleValue());
 //		} else if (metric.equals(PluginConstants.ComponentType.Platform.Metrics.BUFFER_USAGE)) {
 //			try {
-//				resultObject = ProfileServiceUtil.doubleValue(getUsedBufferSpace(connection));
+//				resultObject = (getUsedBufferSpace(connection));
 //			} catch (Exception e) {
 //				final String msg = "Exception executing operation: " + Platform.Operations.GET_BUFFER_USAGE; //$NON-NLS-1$
 //				LOG.error(msg, e);
 //			}
-//		} else if (metric.startsWith(Admin.Cache.PREPARED_PLAN_CACHE.toString() + ".") //$NON-NLS-1$
-//				|| metric.startsWith(Admin.Cache.QUERY_SERVICE_RESULT_SET_CACHE	.toString()+ ".")) { //$NON-NLS-1$
-//			return getCacheProperty(connection, metric);
+		} else if (metric.startsWith(PREPARED_PLAN_CACHE + ".") //$NON-NLS-1$
+				|| metric.startsWith(QUERY_SERVICE_RESULT_SET_CACHE+ ".")) { //$NON-NLS-1$
+			return getCacheProperty(connection, metric);
 		}
 		return resultObject;
 	}
@@ -125,9 +127,8 @@ public class DQPManagementView implements PluginConstants {
 		int dotIndex = metric.indexOf('.');
 		String cacheType = metric.substring(0, dotIndex);
 		String property = metric.substring(dotIndex + 1);
-//		CompositeValueSupport mv = (CompositeValueSupport) getCacheStats(connection, cacheType);
-//		MetaValue v = mv.get(property);
-		return null; //((SimpleValue) v).getValue();
+		Map<String, Object> map = getCacheStats(connection, cacheType);
+		return map.get(property);
 	}
 
 	private Object getVdbMetric(ASConnection connection,
@@ -571,41 +572,28 @@ public class DQPManagementView implements PluginConstants {
 //
 	private Integer getQueryCount(ASConnection connection) throws Exception {
 
-		Integer count = new Integer(0);
-		Object requests = null;
-
 		Address address = DmrUtil.getTeiidAddress();
-		org.rhq.modules.plugins.jbossas7.json.Operation op = new org.rhq.modules.plugins.jbossas7.json.Operation(Platform.Operations.GET_QUERIES, address);
-		Collection<RequestMetadata> requestsCollection = new ArrayList<RequestMetadata>();
-
-		Result result = connection.execute(op);
+		Result result = executeOperation(connection, Platform.Operations.GET_QUERIES, address, null);
 		
-		if (result.isSuccess()){
-			requests = result.getResult();
-		}
-
-		getRequestCollectionValue(requests, requestsCollection);
-
-		if (!requestsCollection.isEmpty()) {
-			count = requestsCollection.size();
-		}
-
-		return count;
+		return getArraySize(result);
 	}
-//
+
 	private Integer getSessionCount(ASConnection connection) throws Exception {
 
 		Address address = DmrUtil.getTeiidAddress();
-		org.rhq.modules.plugins.jbossas7.json.Operation op = new org.rhq.modules.plugins.jbossas7.json.Operation(Platform.Operations.GET_SESSIONS, address);
-		Collection<RequestMetadata> requestsCollection = new ArrayList<RequestMetadata>();
-
-		Result result = connection.execute(op);
+		Result result = executeOperation(connection, Platform.Operations.GET_SESSIONS, address, null);
 		
+		return getArraySize(result);
+	}
+
+	private Integer getArraySize(Result result) throws Exception {
 		if (result.isSuccess()){
-			requestsCollection = (Collection<RequestMetadata>)result.getResult();
+			if (result.getResult()!=null);
+		}else{
+			throw new Exception(result.getFailureDescription());
 		}
 
-		return requestsCollection.size();
+		return result == null ? 0 : ((ArrayList<Map<String,Object>>)result.getResult()).size();
 	}
 //
 //	/**
@@ -650,34 +638,38 @@ public class DQPManagementView implements PluginConstants {
 //		return 0; //count;
 //	}
 //
-//	protected MetaValue getCacheStats(ASConnection connection,
-//			String type) {
-//		try {
-//			return executeManagedOperation(connection,getRuntimeEngineDeployer(connection, mc),
-//					Platform.Operations.GET_CACHE_STATS, SimpleValueSupport.wrap(type));
-//		} catch (Exception e) {
-//			LOG.error("Exception executing operation: " + Platform.Operations.GET_CACHE_STATS, e); //$NON-NLS-1$
-//		}
-//		return null;
-//	}
-//
-	protected Collection<RequestMetadata> getLongRunningQueries(
-			ASConnection connection) {
+	protected Map<String, Object> getCacheStats(ASConnection connection,
+			String type) {
+		
+		Map<String, Object> additionalProperties = new HashMap<String, Object>();
+		additionalProperties.put(Platform.Operations.Parameters.CACHETYPE, type);
+	    Result result = executeOperation(connection, Platform.Operations.GET_CACHE_STATS, DmrUtil.getTeiidAddress(), additionalProperties);
+		
+	    return (Map<String, Object>)result.getResult();
+		
+	}
+
+	protected Integer getLongRunningQueryCount(
+			ASConnection connection) throws Exception {
 
 		Address address = DmrUtil.getTeiidAddress();
-		org.rhq.modules.plugins.jbossas7.json.Operation op = new org.rhq.modules.plugins.jbossas7.json.Operation(Platform.Operations.GET_LONGRUNNINGQUERIES, address);
-		Collection<RequestMetadata> requestsCollection = new ArrayList<RequestMetadata>();
-
-		Result result = connection.execute(op);
+		Result result = executeOperation(connection, Platform.Operations.GET_LONGRUNNINGQUERIES, address, null);
 		
-		if (result.isSuccess()){
-			requestsCollection = (Collection<RequestMetadata>)result.getResult();
-		}
-
-		return requestsCollection;
+		return getArraySize(result);
 	}
-//
-//	protected MetaValue getUsedBufferSpace(ASConnection connection) {
+
+	private Result executeOperation(ASConnection connection, String operationName, Address operationAddress, Map<String, Object> additionalProperties) {
+		org.rhq.modules.plugins.jbossas7.json.Operation op = new org.rhq.modules.plugins.jbossas7.json.Operation(operationName, operationAddress);
+        if (additionalProperties!=null){
+        	op.setAdditionalProperties(additionalProperties);
+        }
+		
+		Result result = connection.execute(op);
+		return result;
+	}
+
+	//TODO: Is this needed in 8.x?
+//	protected Double getUsedBufferSpace(ASConnection connection) {
 //
 //		MetaValue usedBufferSpace = null;
 //
@@ -691,7 +683,7 @@ public class DQPManagementView implements PluginConstants {
 //
 //		return usedBufferSpace;
 //	}
-//
+
 	private void getRequestCollectionValue(Object pValue, Collection<RequestMetadata> list) throws Exception {
 //			for (Object value : ((CollectionValueSupport) pValue).getElements()) {
 //				if (value.getMetaType().isComposite()) {

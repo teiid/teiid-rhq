@@ -254,33 +254,33 @@
 			displayType="detail" category="throughput" property="sessionCount"
 			description="The number of user connections currently active." />
 
-		<metric displayName="Used Buffer Space" defaultOn="true"
+<!-- 		<metric displayName="Used Buffer Space" defaultOn="true"
 			displayType="detail" category="throughput" property="userBufferSpace"
-			description="The currently used file buffer space in MB." />
+			description="The currently used file buffer space in MB." /> -->
 
 		<metric displayName="Prepared Plan Cache Hit Ratio %"
 			defaultOn="true" displayType="detail" category="performance"
-			property="PREPARED_PLAN_CACHE.hitRatio" description="Percentage of positive cache hits" />
+			property="PREPARED_PLAN_CACHE.hit-ratio" description="Percentage of positive cache hits" />
 
 		<metric displayName="Prepared Plan Cache Size" defaultOn="true"
-			displayType="detail" category="performance" property="PREPARED_PLAN_CACHE.totalEntries"
+			displayType="detail" category="performance" property="PREPARED_PLAN_CACHE.total-entries"
 			description="Current number of entries in cache" />
 
 		<metric displayName="Prepared Plan Cache # of Requests"
 			defaultOn="true" displayType="detail" category="performance"
-			property="PREPARED_PLAN_CACHE.requestCount" description="Total number of requests made against cache" />
+			property="PREPARED_PLAN_CACHE.request-count" description="Total number of requests made against cache" />
 
 		<metric displayName="ResultSet Cache Hit Ratio %" defaultOn="true"
 			displayType="detail" category="performance"
-			property="QUERY_SERVICE_RESULT_SET_CACHE.hitRatio" description="Percentage of positive cache hits" />
+			property="QUERY_SERVICE_RESULT_SET_CACHE.hit-ratio" description="Percentage of positive cache hits" />
 
 		<metric displayName="ResultSet Cache Size" defaultOn="true"
 			displayType="detail" category="performance"
-			property="QUERY_SERVICE_RESULT_SET_CACHE.totalEntries" description="Current number of entries in cache" />
+			property="QUERY_SERVICE_RESULT_SET_CACHE.total-entries" description="Current number of entries in cache" />
 
 		<metric displayName="ResultSet Cache  # of Requests" defaultOn="true"
 			displayType="detail" category="performance"
-			property="QUERY_SERVICE_RESULT_SET_CACHE.requestCount" description="Total number of requests made against cache" />
+			property="QUERY_SERVICE_RESULT_SET_CACHE.request-count" description="Total number of requests made against cache" />
 
 		<resource-configuration>
 			<!-- displayPreviewVDBS no longer stored in Teiid as of 8.x. May add back 
@@ -422,11 +422,11 @@
 
 			<c:group name="JDBCTransportConfiguration" displayName="JDBC Transport Configuration Properties"
 				hiddenByDefault="false">
-				<c:simple-property name="JDBCTransportConfiguration.protocol"
+				<c:simple-property name="JDBCTransportConfiguration.protocol" default="teiid"
 					displayName="Protocol" description="Transport protocol (allowed=teiid, pg)" required="false"
 					readOnly="false">
 					<c:property-options>
-						<c:option value="teiid" default="true" name="Teiid" />
+						<c:option value="teiid" name="Teiid" />
 						<c:option value="pg" name="PostgreSQL" />
 					</c:property-options>
 				</c:simple-property>
@@ -451,9 +451,9 @@
 				<c:simple-property name="JDBCTransportConfiguration.ssl-mode"
 					displayName="SSL Mode"
 					description="Can be one of disabled, login, or enabled. Disabled = no transport or message level security will be used; Enabled = traffic will be secured using this configuration, if the client supports SSL; Login = only the login traffic will be encrypted at a message level using 128 bit AES with an ephemerial DH key exchange. No other config values are needed in this mode and it only applies to the JDBC transport"
-					required="false" readOnly="false">
+					required="false" readOnly="false" default="disabled">
 					<c:property-options>
-						<c:option value="disabled" default="true" name="Disabled" />
+						<c:option value="disabled" name="Disabled" />
 						<c:option value="enabled" name="Enabled" />
 						<c:option value="login" name="Login" />
 					</c:property-options>
@@ -461,9 +461,9 @@
 				<c:simple-property name="JDBCTransportConfiguration.ssl-authentication-mode"
 					displayName="SSL Authentication Mode"
 					description="Authentication Mode (1-way, 2-way, anonymous)"
-					required="false" readOnly="false">
+					required="false" readOnly="false" default="1-way">
 					<c:property-options>
-						<c:option value="1-way" default="true" name="1-way" />
+						<c:option value="1-way" name="1-way" />
 						<c:option value="2-way" name="2-way" />
 						<c:option value="anonymous" name="Anonymous" />
 					</c:property-options>
@@ -496,9 +496,9 @@
 				hiddenByDefault="false">
 				<c:simple-property name="ODBCTransportConfiguration.protocol"
 					displayName="Protocol" description="Transport protocol (allowed=teiid, pg)" required="false"
-					readOnly="false">
+					readOnly="false" default="teiid">
 					<c:property-options>
-						<c:option value="teiid" default="true" name="Teiid" />
+						<c:option value="teiid" name="Teiid" />
 						<c:option value="pg" name="Postgres" />
 					</c:property-options>
 				</c:simple-property>
@@ -521,21 +521,21 @@
 					required="false" readOnly="false" />
 				<!-- SSL start -->
 				<c:simple-property name="ODBCTransportConfiguration.ssl-mode"
-					displayName="SSL Mode"
+					displayName="SSL Mode" default="disabled"
 					description="Can be one of disabled, login, or enabled. Disabled = no transport or message level security will be used; Enabled = traffic will be secured using this configuration, if the client supports SSL; Login = only the login traffic will be encrypted at a message level using 128 bit AES with an ephemerial DH key exchange. No other config values are needed in this mode and it only applies to the JDBC transport"
 					required="false" readOnly="false">
 					<c:property-options>
-						<c:option value="disabled" default="true" name="Disabled" />
+						<c:option value="disabled" name="Disabled" />
 						<c:option value="enabled" name="Enabled" />
 						<c:option value="login" name="Login" />
 					</c:property-options>
 				</c:simple-property>
 				<c:simple-property name="ODBCTransportConfiguration.ssl-authentication-mode"
-					displayName="SSL Authentication Mode"
+					displayName="SSL Authentication Mode" default="1-way"
 					description="Authentication Mode (1-way, 2-way, anonymous)"
 					required="false" readOnly="false">
 					<c:property-options>
-						<c:option value="1-way" default="true" name="1-way" />
+						<c:option value="1-way" name="1-way" />
 						<c:option value="2-way" name="2-way" />
 						<c:option value="anonymous" name="Anonymous" />
 					</c:property-options>
@@ -693,7 +693,7 @@
 						default="QUERY_SERVICE_RESULT_SET_CACHE">
 						<c:property-options>
 							<c:option value="QUERY_SERVICE_RESULT_SET_CACHE"
-								default="true" name="Result Set" />
+								name="Result Set" />
 							<c:option value="PREPARED_PLAN_CACHE" name="Prepared Plan" />
 						</c:property-options>
 					</c:simple-property>
@@ -740,19 +740,19 @@
 						summary="true" readOnly="true"/>
 					<c:simple-property name="dynamic" type="boolean"
 						description="True if this ia a dynamic Virtual Database" required="false"
-						summary="true" readOnly="true">	
+						summary="true" readOnly="true" default="INACTIVE">	
 						<c:property-options>
 							<c:option value="ACTIVE" name="UP" />
-							<c:option value="INACTIVE" name="DOWN" default="true" />
+							<c:option value="INACTIVE" name="DOWN" />
 						</c:property-options>
 					</c:simple-property>
 					<c:simple-property name="connectionType" type="string"
 						description="Allowable Connections: 1) NONE - disallow new connections 2) BY VERSION - allow connections only if the version is specified or if this is the earliest 'BY VERSION' vdb and there are no vdbs marked as 'ANY' 
 3) ANY - allow connections with or without a version specified. If multiple versions of same VDB are deployed, connect to one specified with ANY, or if there are multiple VDBs with ANY then connect to the latest version with ANY "
-						required="false">
+						required="false" default="BY_VERSION">
 						<c:property-options>
 							<c:option value="NONE" name="NONE" />
-							<c:option value="BY_VERSION" name="BY VERSION" default="true" />
+							<c:option value="BY_VERSION" name="BY VERSION" />
 							<c:option value="ANY" name="ANY" />
 						</c:property-options>
 					</c:simple-property>

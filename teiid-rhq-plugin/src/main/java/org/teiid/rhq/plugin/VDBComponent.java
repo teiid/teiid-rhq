@@ -165,10 +165,8 @@ public class VDBComponent extends Facet {
 	 */
 	@Override
 	public AvailabilityType getAvailability() {
-		String version = this.resourceConfiguration.getSimpleValue("version",
-				null);
-		String status = null; //DQPManagementView.getVDBStatus(getASConnection(),
-				 // this.name);
+		LinkedHashMap<String, Object> map = getVdbMap();
+		String status = (String) map.get(STATUS);
 		if (status.equals("ACTIVE")) {
 			return AvailabilityType.UP;
 		}
@@ -396,18 +394,7 @@ public class VDBComponent extends Facet {
 	@Override
 	public Configuration loadResourceConfiguration() {
 		
-		Address addr = DmrUtil.getTeiidAddress();
-		org.rhq.modules.plugins.jbossas7.json.Operation op = new org.rhq.modules.plugins.jbossas7.json.Operation(Platform.Operations.GET_VDB, addr);
-		Map<String, Object> additionalProperties = new HashMap<String, Object>();
-		additionalProperties.put(VDBNAME, this.deploymentName);
-		additionalProperties.put(VERSION, this.resourceConfiguration.getSimple("version").getStringValue());
-		op.setAdditionalProperties(additionalProperties);
-		Result result = getASConnection().execute(op);
-		LinkedHashMap<String, Object> map = null;
-
-		if (result.isSuccess()){
-			map = (LinkedHashMap<String, Object>) result.getResult();
-		}
+		LinkedHashMap<String, Object> map = getVdbMap();
 		
 		String vdbName = (String) map.get(VDBNAME);
 		Integer vdbVersion = (Integer) map.get(VERSION);
@@ -437,6 +424,22 @@ public class VDBComponent extends Facet {
 
 		return configuration;
 
+	}
+
+	private LinkedHashMap<String, Object> getVdbMap() {
+		Address addr = DmrUtil.getTeiidAddress();
+		org.rhq.modules.plugins.jbossas7.json.Operation op = new org.rhq.modules.plugins.jbossas7.json.Operation(Platform.Operations.GET_VDB, addr);
+		Map<String, Object> additionalProperties = new HashMap<String, Object>();
+		additionalProperties.put(VDBNAME, this.deploymentName);
+		additionalProperties.put(VERSION, this.resourceConfiguration.getSimple("version").getStringValue());
+		op.setAdditionalProperties(additionalProperties);
+		Result result = getASConnection().execute(op);
+		LinkedHashMap<String, Object> map = null;
+
+		if (result.isSuccess()){
+			map = (LinkedHashMap<String, Object>) result.getResult();
+		}
+		return map;
 	}
 
 	@Override

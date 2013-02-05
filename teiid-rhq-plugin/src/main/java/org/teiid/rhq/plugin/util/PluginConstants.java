@@ -65,7 +65,7 @@ public interface PluginConstants {
 				public final static String GET_PROPERTIES = "getProperties"; //$NON-NLS-1$
 				public final static String GET_REQUESTS = "getRequests"; //$NON-NLS-1$
 				public final static String GET_TRANSACTIONS = "getTransactions"; //$NON-NLS-1$
-				public final static String GET_SESSIONS = "getSessions"; //$NON-NLS-1$
+				public final static String GET_SESSIONS = "list-sessions"; //$NON-NLS-1$
 				public final static String GET_BUFFER_USAGE = "userBufferSpace"; //$NON-NLS-1$
 				public final static String GET_CACHE_STATS = "cache-statistics"; //$NON-NLS-1$
 				public final static String DEPLOY_VDB_BY_URL = "deployVdbByUrl"; //$NON-NLS-1$
@@ -86,6 +86,7 @@ public interface PluginConstants {
 
 					public final static String VDBNAME = "vdb-name";
 					public final static String VDBVERSION = "vdb-version";
+					public final static String CACHETYPE = "cache-type";
 					
 				}
 
