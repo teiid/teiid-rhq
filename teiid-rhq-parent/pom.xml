@@ -160,7 +160,7 @@
 				<scope>provided</scope>
 			</dependency>
 
-			<dependency>
+	<!--	<dependency>
 				<groupId>org.jboss.teiid</groupId>
 				<artifactId>teiid-client</artifactId>
 				<version>${teiid.version}</version>
@@ -171,7 +171,7 @@
 				<groupId>org.jboss.teiid</groupId>
 				<artifactId>teiid-common-core</artifactId>
 				<version>${teiid.version}</version>
-			</dependency>
+			</dependency> -->
 
 			<dependency>
 				<groupId>org.rhq</groupId>

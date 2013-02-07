@@ -54,38 +54,31 @@
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 		</dependency>
-		
+
+		<!-- <dependency> <groupId>commons-logging</groupId> <artifactId>commons-logging</artifactId> 
+			<scope>provided</scope> </dependency> <dependency> <groupId>org.jboss.teiid</groupId> 
+			<artifactId>teiid-client</artifactId> <scope>provided</scope> </dependency> 
+			<dependency> <groupId>org.jboss.teiid</groupId> <artifactId>teiid-common-core</artifactId> 
+			</dependency> -->
+
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		
-		<dependency>
-			<groupId>org.jboss.teiid</groupId>
-			<artifactId>teiid-client</artifactId>
-			<scope>provided</scope>
-		</dependency>
-	
-		<dependency>
-			<groupId>org.jboss.teiid</groupId>
-			<artifactId>teiid-common-core</artifactId>
-		</dependency>
-		
+
 		<dependency>
 			<groupId>jboss.jboss-embeddable-ejb3</groupId>
 			<artifactId>hibernate-all</artifactId>
 		</dependency>
-		
-		<!--
-		Testing
-		-->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-	
+
+		<!-- Testing -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
 
 	<build>
