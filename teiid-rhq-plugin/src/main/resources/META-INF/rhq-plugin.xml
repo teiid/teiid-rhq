@@ -635,7 +635,7 @@
 				</results>
 			</operation>
 
-		<!--	<operation name="getMaterializedViews" displayName="List Materialized View Info"
+		    <operation name="getMaterializedViews" displayName="List Materialized View Info"
 				description="List any Materialized Views for this VDB">
 
 				<results>
@@ -663,9 +663,9 @@
 						</c:map-property>
 					</c:list-property>
 				</results>
-			</operation> -->
+			</operation> 
 
-		<!--  	<operation name="reloadMaterializedView" displayName="Refresh a Materialized View"
+		    <operation name="reloadMaterializedView" displayName="Refresh a Materialized View"
 				description="Refresh a given Materialized View for this VDB">
 				<parameters>
 					<c:simple-property displayName="Materialized View Schema"
@@ -683,7 +683,7 @@
 					<c:simple-property displayName="Result" name="operationResult"
 						type="string" description="Result of refresh" />
 				</results>
-			</operation>-->
+			</operation>
 
 			<operation name="clearCache" displayName="Clear Cache"
 				description="Clears the cache for a given type for this VDB">

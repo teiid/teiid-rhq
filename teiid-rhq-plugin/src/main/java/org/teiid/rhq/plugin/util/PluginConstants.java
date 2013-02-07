@@ -60,6 +60,7 @@ public interface PluginConstants {
 				public final static String CHANGE_VDB_CONNECTION_TYPE = "change-vdb-connection-type";
 				public final static String GET_QUERIES = "list-requests"; //$NON-NLS-1$					
 				public final static String GET_LONGRUNNINGQUERIES = "list-long-running-requests"; //$NON-NLS-1$
+				public final static String EXECUTE_QUERY = "execute-query"; //$NON-NLS-1$
 				public final static String KILL_REQUEST = "cancel-request"; //$NON-NLS-1$
 				public final static String KILL_SESSION = "terminate-session"; //$NON-NLS-1$
 				public final static String KILL_TRANSACTION = "terminate-transaction"; //$NON-NLS-1$
@@ -259,11 +260,13 @@ public interface PluginConstants {
 			public final static String MATVIEW_TABLE = "table"; //$NON-NLS-1$
 			public final static String INVALIDATE_MATVIEW = "invalidate"; //$NON-NLS-1$
 			public final static String CACHE_TYPE = "cacheType"; //$NON-NLS-1$
-			public final static String VDB_NAME = "vdb-name";
-			public final static String VDB_VERSION = "vdb-version";
-			public final static String CACHETYPE = "cache-type";
-			public final static String TRANSACTIONID = "xid";
-			public final static String SESSION = "session";
+			public final static String VDB_NAME = "vdb-name"; //$NON-NLS-1$
+			public final static String VDB_VERSION = "vdb-version"; //$NON-NLS-1$
+			public final static String SQL_QUERY = "sql-query"; //$NON-NLS-1$
+			public final static String CACHETYPE = "cache-type"; //$NON-NLS-1$
+			public final static String TIMEOUT_IN_MILLI = "timeout-in-milli"; //$NON-NLS-1$
+			public final static String TRANSACTIONID = "xid"; //$NON-NLS-1$
+			public final static String SESSION = "session"; //$NON-NLS-1$
 
 		}
 

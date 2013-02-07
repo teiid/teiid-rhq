@@ -38,6 +38,7 @@ import org.teiid.rhq.plugin.objects.ExecutedResult;
 import org.teiid.rhq.plugin.util.DmrUtil;
 import org.teiid.rhq.plugin.util.PluginConstants;
 import org.teiid.rhq.plugin.util.PluginConstants.ComponentType.Platform;
+import org.teiid.rhq.plugin.util.PluginConstants.ComponentType.Platform.Operations;
 import org.teiid.rhq.plugin.util.PluginConstants.ComponentType.VDB;
 
 /**
@@ -210,7 +211,6 @@ public class TeiidModuleView implements PluginConstants {
 	private void executeVdbOperation(ASConnection connection,
 			ExecutedResult operationResult, final String operationName,
 			final Map<String, Object> valueMap) throws Exception {
-		Collection<ArrayList<String>> sqlResultsObject = new ArrayList<ArrayList<String>>();
 		List<Map<String, Object>> resultObject = null;
 		String vdbName = (String) valueMap.get(PluginConstants.ComponentType.VDB.NAME);
 		String vdbVersion = (String) valueMap.get(PluginConstants.ComponentType.VDB.VERSION);
@@ -221,12 +221,9 @@ public class TeiidModuleView implements PluginConstants {
 		} else if (operationName.equals(VDB.Operations.GET_REQUESTS)) {
 			resultObject = getSessions(connection, vdbName, vdbVersion);
 			operationResult.setContent(resultObject);
-		//TODO add mat view operations
-//		} else if (operationName.equals(VDB.Operations.GET_MATVIEWS)) {
-//			List<String> fieldNameList = operationResult.getFieldNameList();
-//			MetaValue resultsMetaValue = executeMaterializedViewQuery(	connection, vdbName, Integer.parseInt(vdbVersion));
-//			getResultsCollectionValue(resultsMetaValue, sqlResultsObject);
-//			operationResult.setContent(createReportResultListForMatViewQuery(fieldNameList, sqlResultsObject.iterator()));
+		} else if (operationName.equals(VDB.Operations.GET_MATVIEWS)) {
+			resultObject = executeMaterializedViewQuery(connection, vdbName, vdbVersion);
+			operationResult.setContent(resultObject);
 		} else if (operationName.equals(VDB.Operations.CLEAR_CACHE)) {
 			
 			Result result = null;
@@ -246,16 +243,18 @@ public class TeiidModuleView implements PluginConstants {
 				operationResult.setContent("failure - see log for details"); //$NON-NLS-1$
 			}
 		
-//		} else if (operationName.equals(VDB.Operations.RELOAD_MATVIEW)) {
-//			MetaValue resultsMetaValue = reloadMaterializedView(connection,	vdbName, Integer.parseInt(vdbVersion),
-//					(String) valueMap.get(Operation.Value.MATVIEW_SCHEMA),
-//					(String) valueMap.get(Operation.Value.MATVIEW_TABLE),
-//					(Boolean) valueMap.get(Operation.Value.INVALIDATE_MATVIEW));
-//			if (resultsMetaValue==null) {
-//				operationResult.setContent("failure - see log for details"); //$NON-NLS-1$
-//			} else {
-//				operationResult.setContent("data successfully refreshed!"); //$NON-NLS-1$
-//			}
+		} else if (operationName.equals(VDB.Operations.RELOAD_MATVIEW)) {
+			Result result = reloadMaterializedView(connection,	vdbName, Integer.parseInt(vdbVersion),
+					(String) valueMap.get(Operation.Value.MATVIEW_SCHEMA),
+					(String) valueMap.get(Operation.Value.MATVIEW_TABLE),
+					(Boolean) valueMap.get(Operation.Value.INVALIDATE_MATVIEW));
+			
+			
+			if (result==null || !result.isSuccess()) {
+				operationResult.setContent("failure - see log for details"); //$NON-NLS-1$
+			} else {
+				operationResult.setContent("data successfully refreshed!"); //$NON-NLS-1$
+			}
 		}
 
 	}
@@ -267,7 +266,7 @@ public class TeiidModuleView implements PluginConstants {
 	protected Result executeClearCache(
 			ASConnection connection, String vdbName, int vdbVersion, String cacheType) throws Exception {
 
-		Map<String, Object> additionalProperties = new HashMap<String, Object>();
+		Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
 		additionalProperties.put(Operation.Value.CACHETYPE, cacheType);
 		additionalProperties.put(Operation.Value.VDB_NAME, vdbName);
 		additionalProperties.put(Operation.Value.VDB_VERSION, vdbVersion);
@@ -275,57 +274,43 @@ public class TeiidModuleView implements PluginConstants {
 		
 	    return result;
 	}
-//	
-	//TODO: Materilaized view operations?
-//	protected MetaValue executeMaterializedViewQuery(
-//			ASConnection connection, String vdbName, int vdbVersion) {
-//
-//		MetaValue resultsCollection = null;
-//		MetaValue[] args = new MetaValue[] {
-//				SimpleValueSupport.wrap(vdbName),
-//				SimpleValueSupport.wrap(vdbVersion),
-//				SimpleValueSupport.wrap(Operation.Value.MAT_VIEW_QUERY),	
-//				SimpleValueSupport.wrap(Long.parseLong("9999999")) }; //$NON-NLS-1$
-//
-//		try {
-//			resultsCollection = executeManagedOperation(connection,	getRuntimeEngineDeployer(connection, mc),	VDB.Operations.EXECUTE_QUERIES, args);
-//		} catch (Exception e) {
-//			final String msg = "Exception executing operation: " + VDB.Operations.EXECUTE_QUERIES; //$NON-NLS-1$
-//			LOG.error(msg, e);
-//		}
-//
-//		return resultsCollection;
-//
-//	}
-//
-//	protected MetaValue reloadMaterializedView(
-//			ASConnection connection, String vdbName,
-//			int vdbVersion, String schema, String table, Boolean invalidate) {
-//
-//		MetaValue result = null;
-//		String matView = schema + "." + table; //$NON-NLS-1$
-//		String query = PluginConstants.Operation.Value.MAT_VIEW_REFRESH;
-//		query = query.replace("param1", matView); //$NON-NLS-1$
-//		query = query.replace("param2", invalidate.toString()); //$NON-NLS-1$
-//		MetaValue[] args = new MetaValue[] {
-//				SimpleValueSupport.wrap(vdbName),
-//				SimpleValueSupport.wrap(vdbVersion),
-//				SimpleValueSupport.wrap(query),
-//				SimpleValueSupport.wrap(Long.parseLong("9999999")) }; //$NON-NLS-1$
-//
-//		try {
-//			result = executeManagedOperation(connection,	getRuntimeEngineDeployer(connection, mc),
-//					VDB.Operations.EXECUTE_QUERIES, args);
-//		} catch (Exception e) {
-//			final String msg = "Exception executing operation: " + VDB.Operations.RELOAD_MATVIEW; //$NON-NLS-1$
-//			LOG.error(msg, e);
-//			
-//		}
-//
-//		return result;
-//
-//	}
-//
+
+	protected List<Map<String,Object>> executeMaterializedViewQuery(
+			ASConnection connection, String vdbName, String vdbVersion) {
+
+		Map<String,Object> additionalProperties = new LinkedHashMap<String,Object>();
+		additionalProperties.put(Operation.Value.VDB_NAME, vdbName);
+		additionalProperties.put(Operation.Value.VDB_VERSION, vdbVersion);
+		additionalProperties.put(Operation.Value.SQL_QUERY, Operation.Value.MAT_VIEW_QUERY);
+		additionalProperties.put(Operation.Value.TIMEOUT_IN_MILLI, "9999999");
+
+		Result result = executeOperation(connection, Platform.Operations.EXECUTE_QUERY, DmrUtil.getTeiidAddress(), additionalProperties);
+
+		return (List<Map<String,Object>>)result.getResult();
+
+	}
+
+	protected Result reloadMaterializedView(
+			ASConnection connection, String vdbName,
+			int vdbVersion, String schema, String table, Boolean invalidate) {
+
+		Result result = null;
+		String matView = schema + "." + table; //$NON-NLS-1$
+		String query = PluginConstants.Operation.Value.MAT_VIEW_REFRESH;
+		query = query.replace("param1", matView); //$NON-NLS-1$
+		query = query.replace("param2", invalidate.toString()); //$NON-NLS-1$
+		Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>(); 
+		additionalProperties.put(Operation.Value.VDB_NAME, vdbName);
+		additionalProperties.put(Operation.Value.VDB_VERSION, vdbVersion);
+		additionalProperties.put(Operation.Value.SQL_QUERY, query);
+		additionalProperties.put(Operation.Value.TIMEOUT_IN_MILLI, "9999999");
+
+		result = executeOperation(connection, Operations.EXECUTE_QUERY, DmrUtil.getTeiidAddress(), additionalProperties);
+	
+		return result;
+
+	}
+
 
 	protected List<Map<String, Object>> getTransactions(ASConnection connection) {
 
