@@ -56,6 +56,7 @@ public interface PluginConstants {
 				public final static String ADD_DATA_ROLE = "add-data-role";
 				public final static String ASSIGN_DATASOURCE = "assign-datasource";
 				public final static String GET_CACHE_TYPES = "cache-types";
+				public final static String CLEAR_CACHE = "clear-cache";
 				public final static String CHANGE_VDB_CONNECTION_TYPE = "change-vdb-connection-type";
 				public final static String GET_QUERIES = "list-requests"; //$NON-NLS-1$					
 				public final static String GET_LONGRUNNINGQUERIES = "list-long-running-requests"; //$NON-NLS-1$

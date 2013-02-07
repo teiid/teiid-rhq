@@ -221,26 +221,31 @@ public class TeiidModuleView implements PluginConstants {
 		} else if (operationName.equals(VDB.Operations.GET_REQUESTS)) {
 			resultObject = getSessions(connection, vdbName, vdbVersion);
 			operationResult.setContent(resultObject);
-		//TODO add cache and mat view operations
+		//TODO add mat view operations
 //		} else if (operationName.equals(VDB.Operations.GET_MATVIEWS)) {
 //			List<String> fieldNameList = operationResult.getFieldNameList();
 //			MetaValue resultsMetaValue = executeMaterializedViewQuery(	connection, vdbName, Integer.parseInt(vdbVersion));
 //			getResultsCollectionValue(resultsMetaValue, sqlResultsObject);
 //			operationResult.setContent(createReportResultListForMatViewQuery(fieldNameList, sqlResultsObject.iterator()));
-//		} else if (operationName.equals(VDB.Operations.CLEAR_CACHE)) {
-//			
-//			try {
-//			executeClearCache(	connection, vdbName, Integer.parseInt(vdbVersion), 
-//					(String) valueMap.get(Operation.Value.CACHE_TYPE));
-//				
-//			}catch(Exception e){
-//				//Some failure during Clear Cache. Set message here since it has already been logged.
-//				operationResult.setContent("failure - see log for details"); //$NON-NLS-1$
-//			}
-//
-//			//If no exceptions, we assume the clear cache worked
-//			operationResult.setContent("cache successfully cleared!"); //$NON-NLS-1$
-//		
+		} else if (operationName.equals(VDB.Operations.CLEAR_CACHE)) {
+			
+			Result result = null;
+			try {
+			result = executeClearCache(	connection, vdbName, Integer.parseInt(vdbVersion), 
+					(String) valueMap.get(Operation.Value.CACHE_TYPE));
+				
+			}catch(Exception e){
+				//Some failure during Clear Cache. Set message here since it has already been logged.
+				operationResult.setContent("failure - see log for details"); //$NON-NLS-1$
+			}
+
+			//If no exceptions, we assume the clear cache worked
+			if (result.isSuccess()){
+				operationResult.setContent("cache successfully cleared!"); //$NON-NLS-1$
+			}else{
+				operationResult.setContent("failure - see log for details"); //$NON-NLS-1$
+			}
+		
 //		} else if (operationName.equals(VDB.Operations.RELOAD_MATVIEW)) {
 //			MetaValue resultsMetaValue = reloadMaterializedView(connection,	vdbName, Integer.parseInt(vdbVersion),
 //					(String) valueMap.get(Operation.Value.MATVIEW_SCHEMA),
@@ -259,21 +264,17 @@ public class TeiidModuleView implements PluginConstants {
 	 * Helper methods
 	 */
 
-	private String formatVdbName(String vdbName) {
+	protected Result executeClearCache(
+			ASConnection connection, String vdbName, int vdbVersion, String cacheType) throws Exception {
 
-		return vdbName.substring(0, vdbName.lastIndexOf(".")); //$NON-NLS-1$
+		Map<String, Object> additionalProperties = new HashMap<String, Object>();
+		additionalProperties.put(Operation.Value.CACHETYPE, cacheType);
+		additionalProperties.put(Operation.Value.VDB_NAME, vdbName);
+		additionalProperties.put(Operation.Value.VDB_VERSION, vdbVersion);
+	    Result result = executeOperation(connection, Platform.Operations.CLEAR_CACHE, DmrUtil.getTeiidAddress(), additionalProperties);
+		
+	    return result;
 	}
-
-	//TODO: Clear cache at VDB level or platform?
-//	protected void executeClearCache(
-//			ASConnection connection, String vdbName, int vdbVersion, String cacheType) throws Exception {
-//
-//		Map<String, Object> additionalProperties = new HashMap<String, Object>();
-//		additionalProperties.put(Operation.Value.CACHETYPE, type);
-//	    Result result = executeOperation(connection, Platform.Operations.GET_CACHE_STATS, DmrUtil.getTeiidAddress(), additionalProperties);
-//		
-//	    return (Map<String, Object>)result.getResult();
-//	}
 //	
 	//TODO: Materilaized view operations?
 //	protected MetaValue executeMaterializedViewQuery(
