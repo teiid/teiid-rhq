@@ -71,7 +71,6 @@ public class TranslatorDiscoveryComponent implements ResourceDiscoveryComponent 
 			
 			String translatorKey = (String) map.get(TranslatorComponent.TRANSLATORNAME);
 			String translatorName = translatorKey;
-			String moduleType =  (String) map.get(TranslatorComponent.MODULENAME);;
 			String description = (String) map.get(TranslatorComponent.DESCRIPTION);
 
 			/**

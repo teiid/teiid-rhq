@@ -23,6 +23,7 @@ package org.teiid.rhq.plugin;
 
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -82,8 +83,6 @@ public class PlatformDiscoveryComponent implements
 		Address addr = DmrUtil.getTeiidAddress();
 		Result result = connection.execute(new ReadResource(addr));
 		
-		LinkedHashMap map = (LinkedHashMap) result.getResult();
-
 		if (result.isSuccess()) {
 			
 			Result versionResult = connection.execute(new ReadChildrenNames(addr, "runtime-version"));

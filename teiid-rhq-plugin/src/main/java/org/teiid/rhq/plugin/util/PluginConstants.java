@@ -63,8 +63,8 @@ public interface PluginConstants {
 				public final static String KILL_SESSION = "terminate-session"; //$NON-NLS-1$
 				public final static String KILL_TRANSACTION = "terminate-transaction"; //$NON-NLS-1$
 				public final static String GET_PROPERTIES = "getProperties"; //$NON-NLS-1$
-				public final static String GET_REQUESTS = "getRequests"; //$NON-NLS-1$
-				public final static String GET_TRANSACTIONS = "getTransactions"; //$NON-NLS-1$
+				public final static String GET_REQUESTS = "list-requests"; //$NON-NLS-1$
+				public final static String GET_TRANSACTIONS = "list-transactions"; //$NON-NLS-1$
 				public final static String GET_SESSIONS = "list-sessions"; //$NON-NLS-1$
 				public final static String GET_BUFFER_USAGE = "userBufferSpace"; //$NON-NLS-1$
 				public final static String GET_CACHE_STATS = "cache-statistics"; //$NON-NLS-1$
@@ -82,15 +82,6 @@ public interface PluginConstants {
 				public final static String LIST_TRANSACTIONS = "list-transactions";
 				public final static String lIST_TRANSLATORS = "list-translators";
 				
-				public static interface Parameters {
-
-					public final static String VDBNAME = "vdb-name";
-					public final static String VDBVERSION = "vdb-version";
-					public final static String CACHETYPE = "cache-type";
-					
-				}
-
-				
 			}
 
 			public static interface Metrics {
@@ -104,8 +95,6 @@ public interface PluginConstants {
 
 		public interface VDB {
 
-			public final static String TYPE = "teiid"; //$NON-NLS-1$
-			public final static String SUBTYPE = "vdb"; //$NON-NLS-1$
 			public final static String NAME = "Teiid Virtual Database"; //$NON-NLS-1$
 			public final static String VERSION = "version"; //$NON-NLS-1$
 			public final static String DESCRIPTION = "Teiid Virtual Database (VDB)"; //$NON-NLS-1$
@@ -263,13 +252,17 @@ public interface PluginConstants {
 			public final static String SESSION_ID = "sessionID"; //$NON-NLS-1$
 			public final static String VDB_URL = "vdbUrl"; //$NON-NLS-1$
 			public final static String VDB_DEPLOY_NAME = "vdbDeployName"; //$NON-NLS-1$
-			public final static String VDB_VERSION = "vdbVersion"; //$NON-NLS-1$
 			public final static String NAME = "Name"; //$NON-NLS-1$
 			public final static String VALUE = "Value"; //$NON-NLS-1$
 			public final static String MATVIEW_SCHEMA = "schema"; //$NON-NLS-1$
 			public final static String MATVIEW_TABLE = "table"; //$NON-NLS-1$
 			public final static String INVALIDATE_MATVIEW = "invalidate"; //$NON-NLS-1$
 			public final static String CACHE_TYPE = "cacheType"; //$NON-NLS-1$
+			public final static String VDB_NAME = "vdb-name";
+			public final static String VDB_VERSION = "vdb-version";
+			public final static String CACHETYPE = "cache-type";
+			public final static String TRANSACTIONID = "xid";
+			public final static String SESSION = "session";
 
 		}
 

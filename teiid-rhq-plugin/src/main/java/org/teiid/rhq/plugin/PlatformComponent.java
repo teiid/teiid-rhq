@@ -43,7 +43,7 @@ import org.rhq.modules.plugins.jbossas7.json.Address;
 import org.rhq.modules.plugins.jbossas7.json.ReadResource;
 import org.rhq.modules.plugins.jbossas7.json.Result;
 import org.rhq.modules.plugins.jbossas7.json.WriteAttribute;
-import org.teiid.rhq.admin.DQPManagementView;
+import org.teiid.rhq.admin.TeiidModuleView;
 import org.teiid.rhq.plugin.util.DmrUtil;
 import org.teiid.rhq.plugin.util.PluginConstants;
 import org.teiid.rhq.plugin.util.PluginConstants.ComponentType.Platform;
@@ -110,7 +110,7 @@ public class PlatformComponent extends Facet {
 	@Override
 	public void getValues(MeasurementReport report, Set<MeasurementScheduleRequest> requests) throws Exception {
 
-		DQPManagementView view = new DQPManagementView();
+		TeiidModuleView view = new TeiidModuleView();
 
 		Map<String, Object> valueMap = new HashMap<String, Object>();
 
@@ -149,23 +149,6 @@ public class PlatformComponent extends Facet {
 	public void stop() {
 		// TODO Auto-generated method stub
 		super.stop();
-	}
-	
-	/**
-	 * @param operationList
-	 * @param propertyMap
-	 * @param key
-	 * @param address
-	 */
-	private void addOperation(List<org.rhq.modules.plugins.jbossas7.json.Operation> operationList, String key, Object value, Address address) {
-		if (key.indexOf(ODBC_TRANSPORT_CONFIGURATION)>-1 || key.indexOf(JDBC_TRANSPORT_CONFIGURATION)>-1){
-			key = key.substring(key.indexOf(".")+1);
-		}
-	
-	    Map<String, Object> parameters = new HashMap<String, Object>();
-	    parameters.put(key, value);
-		org.rhq.modules.plugins.jbossas7.json.Operation op = new WriteAttribute(address, key, value);
-		operationList.add(op);
 	}
 	
 	/*
@@ -255,10 +238,5 @@ public class PlatformComponent extends Facet {
 	public ASConnection getASConnection() {
 		return ((BaseComponent<BaseComponent<?>>) this.resourceContext.getParentResourceComponent()).getASConnection();
 	}
-
-//	@Override
-//	public EmsConnection getEmsConnection() {
-//		return null;
-//	}
 
 }

@@ -173,12 +173,5 @@ public class TranslatorComponent extends Facet {
 	public ASConnection getASConnection() {
 		return ((PlatformComponent)this.resourceContext.getParentResourceComponent()).getASConnection();
 	}
-
-
-//	@Override
-//	public EmsConnection getEmsConnection() {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
 	
 }

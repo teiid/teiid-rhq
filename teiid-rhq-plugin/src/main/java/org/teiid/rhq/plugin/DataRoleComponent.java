@@ -22,17 +22,22 @@
 package org.teiid.rhq.plugin;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.rhq.core.domain.configuration.Configuration;
+import org.rhq.core.domain.configuration.PropertyList;
+import org.rhq.core.domain.configuration.PropertyMap;
+import org.rhq.core.domain.configuration.PropertySimple;
 import org.rhq.core.domain.measurement.AvailabilityType;
 import org.rhq.core.domain.measurement.MeasurementReport;
 import org.rhq.core.domain.measurement.MeasurementScheduleRequest;
 import org.rhq.core.pluginapi.configuration.ConfigurationFacet;
 import org.rhq.core.pluginapi.configuration.ConfigurationUpdateReport;
 import org.rhq.core.pluginapi.inventory.CreateResourceReport;
+import org.rhq.core.pluginapi.inventory.DiscoveredResourceDetails;
 import org.rhq.core.pluginapi.inventory.ResourceContext;
 import org.rhq.modules.plugins.jbossas7.ASConnection;
 import org.teiid.rhq.plugin.util.PluginConstants;
@@ -44,6 +49,18 @@ import org.teiid.rhq.plugin.util.PluginConstants;
 public class DataRoleComponent extends Facet {
 	private final Log LOG = LogFactory
 			.getLog(PluginConstants.DEFAULT_LOGGER_CATEGORY);
+	
+	
+	public static final String POLICY_NAME = "policy-name";
+	public static final String POLICY_DESCRIPTION = "policy-description";
+	public static final String ALLOW_CREATE_TEMP_TABLES = "allow-create-temp-tables";
+	public static final String ANY_AUTHENTICATED = "any-authenticated";
+	public static final String DATA_PERMISSIONS = "data-permissions";
+	public static final String RESOURCE_NAME = "resource-name";
+	public static final String ALLOW_CREATE = "allow-create";
+	public static final String ALLOW_UPDATE = "allow-update";
+	public static final String ALLOW_READ = "allow-read";
+	public static final String MAPPED_ROLE_NAMES = "mapped-role-names";
 
 	/*
 	 * (non-Javadoc)
@@ -95,6 +112,8 @@ public class DataRoleComponent extends Facet {
 	 */
 	public void updateResourceConfiguration(ConfigurationUpdateReport report) {
 
+		//TODO: Support update in plugin for data roles?
+		
 //		Configuration resourceConfig = report.getConfiguration();
 //		resourceConfiguration = resourceConfig.deepCopy();
 //
@@ -169,96 +188,63 @@ public class DataRoleComponent extends Facet {
 
 	}
 
-//	/**
-//	 * @param mappedRoleNameList
-//	 */
-//	private MetaValue convertListOfStringsToMetaValue(List<String> mappedRoleNameList) {
-//		 
-//		 MetaValue[] listMemberValues = new MetaValue[mappedRoleNameList.size()];
-//		 int memberIndex = 0;
-//		 
-//		 for (String mappedRoleName : mappedRoleNameList)
-//	     {
-//	      MetaValue mappedRoleNameValue = SimpleValueSupport.wrap(mappedRoleName);
-//	      listMemberValues[memberIndex++] = mappedRoleNameValue;
-//	     }
-//	     return new CollectionValueSupport( new CollectionMetaType("java.util.List", SimpleMetaType.STRING), //$NON-NLS-1$
-//	    		                            listMemberValues);
-//	     
-//	}
-
 	@Override
 	public Configuration loadResourceConfiguration() {
 
-//		VDBComponent parentComponent = (VDBComponent) this.resourceContext
-//				.getParentResourceComponent();
-//		ManagedComponent mcVdb = null;
-//		Configuration configuration = resourceContext.getPluginConfiguration();
-//		try {
-//			mcVdb = ProfileServiceUtil.getManagedComponent(getASConnection(),
-//					new ComponentType(PluginConstants.ComponentType.VDB.TYPE,
-//							PluginConstants.ComponentType.VDB.SUBTYPE),
-//					parentComponent.name);
-//		} catch (NamingException e) {
-//			final String msg = "NamingException in loadResourceConfiguration(): " + e.getMessage(); //$NON-NLS-1$
-//			LOG.error(msg, e);
-//		} catch (Exception e) {
-//			final String msg = "Exception in loadResourceConfiguration(): " + e.getMessage(); //$NON-NLS-1$
-//			LOG.error(msg, e);
-//		}
-//
-//		// Get data roles from VDB
-//		ManagedProperty property = mcVdb.getProperty("dataPolicies"); //$NON-NLS-1$
-//		if (property != null) {
-//			CollectionValueSupport valueSupport = (CollectionValueSupport) property
-//					.getValue();
-//			MetaValue[] metaValues = valueSupport.getElements();
-//
-//			for (MetaValue value : metaValues) {
-//				GenericValueSupport genValueSupport = (GenericValueSupport) value;
-//				ManagedObjectImpl managedObject = (ManagedObjectImpl) genValueSupport
-//						.getValue();
-//
-//				String dataRoleName = ProfileServiceUtil.getSimpleValue(
-//						managedObject, "name", String.class); //$NON-NLS-1$
-//				Boolean anyAuthenticated = ProfileServiceUtil.getSimpleValue(
-//						managedObject, "anyAuthenticated", Boolean.class); //$NON-NLS-1$
-//				String description = ProfileServiceUtil.getSimpleValue(
-//						managedObject, "description", String.class); //$NON-NLS-1$
-//
-//				configuration.put(new PropertySimple("name", dataRoleName)); //$NON-NLS-1$
-//				configuration.put(new PropertySimple("anyAuthenticated", //$NON-NLS-1$ 
-//						anyAuthenticated));
-//				configuration
-//						.put(new PropertySimple("description", description)); //$NON-NLS-1$
-//
-//				PropertyList mappedRoleNameList = new PropertyList(
-//						"mappedRoleNameList"); //$NON-NLS-1$
-//				configuration.put(mappedRoleNameList);
-//				ManagedProperty mappedRoleNames = managedObject
-//						.getProperty("mappedRoleNames"); //$NON-NLS-1$
-//				if (mappedRoleNames != null) {
-//					CollectionValueSupport props = (CollectionValueSupport) mappedRoleNames
-//							.getValue();
-//					for (MetaValue mappedRoleName : props.getElements()) {
-//						PropertyMap mappedRoleNameMap = null;
-//
-//						try {
-//							mappedRoleNameMap = new PropertyMap(
-//									"map", //$NON-NLS-1$
-//									new PropertySimple(
-//											"name", (ProfileServiceUtil.stringValue(mappedRoleName)))); //$NON-NLS-1$
-//						} catch (Exception e) {
-//							final String msg = "Exception in loadResourceConfiguration(): " + e.getMessage(); //$NON-NLS-1$
-//							LOG.error(msg, e);
-//						}
-//						mappedRoleNameList.add(mappedRoleNameMap);
-//					}
-//				}
-//			}
-//		}
+		VDBComponent parentComponent = (VDBComponent) this.resourceContext
+				.getParentResourceComponent();
+		Configuration configuration = this.resourceConfiguration;
+		ASConnection connection = parentComponent.getASConnection();
 
-		return null; //configuration;
+		Map<String, Object> vdbMap = VDBComponent.getVdbMap(connection, parentComponent.deploymentName,
+				parentComponent.getResourceConfiguration().getSimple("version")
+						.getStringValue());
+
+		// Get data roles from VDB
+		List<Map<String, Object>> dataPolicies = (List<Map<String, Object>>) vdbMap.get(VDBComponent.DATA_POLICIES);
+		for (Map<String, Object> policy : dataPolicies) {
+		     String dataRoleName = (String) policy.get(DataRoleComponent.POLICY_NAME);
+		     Boolean anyAuthenticated =  (Boolean) policy.get(DataRoleComponent.ANY_AUTHENTICATED);
+		     String description = (String) policy.get(DataRoleComponent.POLICY_DESCRIPTION);
+		     Boolean allowTempTableCreate = (Boolean) policy.get(DataRoleComponent.ALLOW_CREATE_TEMP_TABLES);
+			 
+			 configuration.put(new PropertySimple("name", dataRoleName));
+			 configuration.put(new PropertySimple("anyAuthenticated", anyAuthenticated));
+			 configuration.put(new PropertySimple("description", description));
+			 configuration.put(new PropertySimple("allowCreateTempTables", allowTempTableCreate));
+			
+			 //Load data permissions list
+			 PropertyList dataPermissionsList = new PropertyList(
+					 "dataPermissionsList");
+			 configuration.put(dataPermissionsList);
+			 List<Map<String, Object>> dataPermissions = (List<Map<String, Object>> ) policy.get(DataRoleComponent.DATA_PERMISSIONS);
+			 if (dataPermissions != null) {
+				 for (Map<String, Object> dataPermission : dataPermissions) {
+					 PropertyMap dataPermissionsMap = new PropertyMap(
+							 "map");
+					 dataPermissionsList.add(dataPermissionsMap);
+					 dataPermissionsMap.put(new PropertySimple("resourceName", dataPermission.get(DataRoleComponent.RESOURCE_NAME)));
+					 dataPermissionsMap.put(new PropertySimple("allowCreate", dataPermission.get(DataRoleComponent.ALLOW_CREATE)));
+					 dataPermissionsMap.put(new PropertySimple("allowUpdate", dataPermission.get(DataRoleComponent.ALLOW_UPDATE)));
+					 dataPermissionsMap.put(new PropertySimple("allowRead", dataPermission.get(DataRoleComponent.ALLOW_READ)));
+				 }
+			
+			 }
+			 
+			 //Load mapped role names list
+			 PropertyList mappedRoleNameList = new PropertyList(
+			 "mappedRoleNameList");
+			 configuration.put(mappedRoleNameList);
+			 List<String> mappedRoleNames = (List<String>) policy.get(DataRoleComponent.MAPPED_ROLE_NAMES);
+			 if (mappedRoleNames != null) {
+				 for (String mappedRoleName : mappedRoleNames) {
+					 mappedRoleNameList.add(new PropertySimple("name", mappedRoleName));
+				 }
+			
+			 }
+		}
+
+		return configuration;
 
 	}
 
@@ -275,11 +261,5 @@ public class DataRoleComponent extends Facet {
 		return ((VDBComponent) this.resourceContext
 				.getParentResourceComponent()).getASConnection();
 	}
-
-//	@Override
-//	public EmsConnection getEmsConnection() {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
 
 }

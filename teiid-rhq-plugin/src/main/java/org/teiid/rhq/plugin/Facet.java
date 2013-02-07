@@ -74,7 +74,7 @@ import org.rhq.modules.plugins.jbossas7.BaseComponent;
 import org.rhq.modules.plugins.jbossas7.json.Address;
 import org.rhq.modules.plugins.jbossas7.json.ReadAttribute;
 import org.rhq.modules.plugins.jbossas7.json.Result;
-import org.teiid.rhq.admin.DQPManagementView;
+import org.teiid.rhq.admin.TeiidModuleView;
 import org.teiid.rhq.plugin.deployer.Deployer;
 import org.teiid.rhq.plugin.objects.ExecutedOperationResultImpl;
 import org.teiid.rhq.plugin.objects.ExecutedResult;
@@ -134,10 +134,6 @@ public abstract class Facet extends BaseComponent<BaseComponent<?>> implements
 
 	String key;
 
-	/**
-	 * The name of the ManagedDeployment (e.g.:
-	 * C:/opt/jboss-5.0.0.GA/server/default/deploy/foo.vdb).
-	 */
 	protected String deploymentName;
 	protected String deploymentUrl;
 
@@ -170,7 +166,6 @@ public abstract class Facet extends BaseComponent<BaseComponent<?>> implements
 		resourceContext = context;
 		deploymentName = context.getResourceKey();
         pluginConfiguration = context.getPluginConfiguration();
-     //   serverComponent = findServerComponent();
         path = pluginConfiguration.getSimpleValue("path");
         address = new Address(path);
         key = context.getResourceKey();
@@ -238,7 +233,7 @@ public abstract class Facet extends BaseComponent<BaseComponent<?>> implements
 
 	protected void execute(final ASConnection connection,
 			final ExecutedResult result, final Map<String, Object> valueMap) {
-		DQPManagementView dqp = new DQPManagementView();
+		TeiidModuleView dqp = new TeiidModuleView();
 
 		try {
 			dqp.executeOperation(connection, result, valueMap);
@@ -311,32 +306,18 @@ public abstract class Facet extends BaseComponent<BaseComponent<?>> implements
 	@Override
 	 public Configuration loadResourceConfiguration() throws Exception {
 
-	        ConfigurationDefinition configDef = resourceContext.getResourceType().getResourceConfigurationDefinition();
-	        ConfigurationLoadDelegate delegate = new ConfigurationLoadDelegate(configDef, getASConnection(), DmrUtil.getTeiidAddress());
-	        Configuration configuration = delegate.loadResourceConfiguration();
+		//Implemented in the component
+	     return null;
+	     
+	}
 
-	        // Read server state
-	        ReadAttribute op = new ReadAttribute(getAddress(), "name");
-	        Result res = getASConnection().execute(op);
-	        if (res.isReloadRequired()) {
-	            PropertySimple oobMessage = new PropertySimple("__OOB","The server needs a reload for the latest changes to come effective.");
-	            configuration.put(oobMessage);
-	        }
-//	        if (res.isRestartRequired()) {
-//	            PropertySimple oobMessage = new PropertySimple("__OOB",
-//	                "The server needs a restart for the latest changes to come effective.");
-//	            configuration.put(oobMessage);
-//	        }
-	        return configuration;
-	    }
+    @Override
+    public void updateResourceConfiguration(ConfigurationUpdateReport report) {
 
-	    @Override
-	    public void updateResourceConfiguration(ConfigurationUpdateReport report) {
-
-	        ConfigurationDefinition configDef = resourceContext.getResourceType().getResourceConfigurationDefinition();
-	        ConfigurationWriteDelegate delegate = new ConfigurationWriteDelegate(configDef, getASConnection(), getAddress());
-	        delegate.updateResourceConfiguration(report);
-	    }
+        ConfigurationDefinition configDef = resourceContext.getResourceType().getResourceConfigurationDefinition();
+        ConfigurationWriteDelegate delegate = new ConfigurationWriteDelegate(configDef, getASConnection(), getAddress());
+        delegate.updateResourceConfiguration(report);
+    }
 
 	/**
 	 * The plugin container will call this method when it has a new
@@ -662,42 +643,42 @@ public abstract class Facet extends BaseComponent<BaseComponent<?>> implements
 
 		// PLEASE DO NOT REMOVE THIS METHOD. IT IS REQUIRED FOR THE CONTENT TAB.
 
-		Configuration pluginConfig = this.resourceContext
-				.getPluginConfiguration();
-		this.deploymentUrl = pluginConfig.getSimple("url").getStringValue(); //$NON-NLS-1$
-
-		if (this.deploymentUrl != null) {
-			this.deploymentFile = new File(this.deploymentUrl
-					.substring(deploymentUrl.indexOf(":/") + 1)); //$NON-NLS-1$
-		}
-
-		if (!deploymentFile.exists())
-			throw new IllegalStateException("Deployment file '" //$NON-NLS-1$
-					+ this.deploymentFile + "' for " + this.getComponentType() //$NON-NLS-1$
-					+ " does not exist."); //$NON-NLS-1$
-
-		String fileName = deploymentFile.getName();
-		org.rhq.core.pluginapi.content.version.PackageVersions packageVersions = loadPackageVersions();
-		String version = packageVersions.getVersion(fileName);
-		if (version == null) {
-			// This is either the first time we've discovered this VDB, or
-			// someone purged the PC's data dir.
-			version = "1.0"; //$NON-NLS-1$
-			packageVersions.putVersion(fileName, version);
-			packageVersions.saveToDisk();
-		}
-
-		// Package name is the deployment's file name (e.g. foo.ear).
-		PackageDetailsKey key = new PackageDetailsKey(fileName, version,
-				PKG_TYPE_VDB, ARCHITECTURE);
-		ResourcePackageDetails packageDetails = new ResourcePackageDetails(key);
-		packageDetails.setFileName(fileName);
-		packageDetails.setLocation(deploymentFile.getPath());
-		if (!deploymentFile.isDirectory())
-			packageDetails.setFileSize(deploymentFile.length());
-		packageDetails.setFileCreatedDate(null);  
+//		Configuration pluginConfig = this.resourceContext
+//				.getPluginConfiguration();
+//		this.deploymentUrl = pluginConfig.getSimple("url").getStringValue(); //$NON-NLS-1$
+//
+//		if (this.deploymentUrl != null) {
+//			this.deploymentFile = new File(this.deploymentUrl
+//					.substring(deploymentUrl.indexOf(":/") + 1)); //$NON-NLS-1$
+//		}
+//
+//		if (!deploymentFile.exists())
+//			throw new IllegalStateException("Deployment file '" //$NON-NLS-1$
+//					+ this.deploymentFile + "' for " + this.getComponentType() //$NON-NLS-1$
+//					+ " does not exist."); //$NON-NLS-1$
+//
+//		String fileName = deploymentFile.getName();
+//		org.rhq.core.pluginapi.content.version.PackageVersions packageVersions = loadPackageVersions();
+//		String version = packageVersions.getVersion(fileName);
+//		if (version == null) {
+//			// This is either the first time we've discovered this VDB, or
+//			// someone purged the PC's data dir.
+//			version = "1.0"; //$NON-NLS-1$
+//			packageVersions.putVersion(fileName, version);
+//			packageVersions.saveToDisk();
+//		}
+//
+//		// Package name is the deployment's file name (e.g. foo.ear).
+//		PackageDetailsKey key = new PackageDetailsKey(fileName, version,
+//				PKG_TYPE_VDB, ARCHITECTURE);
+//		ResourcePackageDetails packageDetails = new ResourcePackageDetails(key);
+//		packageDetails.setFileName(fileName);
+//		packageDetails.setLocation(deploymentFile.getPath());
+//		if (!deploymentFile.isDirectory())
+//			packageDetails.setFileSize(deploymentFile.length());
+//		packageDetails.setFileCreatedDate(null);  
 		Set<ResourcePackageDetails> packages = new HashSet<ResourcePackageDetails>();
-		packages.add(packageDetails);
+//		packages.add(packageDetails);
 
 		return packages;
 	}
@@ -824,15 +805,15 @@ public abstract class Facet extends BaseComponent<BaseComponent<?>> implements
 			
 			Integer vdbVersion = ((PropertySimple)versionProp).getIntegerValue();
 			//strip off vdb extension if user added it
-			if (deployName.endsWith(DQPManagementView.VDB_EXT)){  
-				deployName = deployName.substring(0, deployName.lastIndexOf(DQPManagementView.VDB_EXT));  
+			if (deployName.endsWith(TeiidModuleView.VDB_EXT)){  
+				deployName = deployName.substring(0, deployName.lastIndexOf(TeiidModuleView.VDB_EXT));  
 			}
 			if (vdbVersion!=null){
-				deployName = deployName + "." + ((Integer)vdbVersion).toString() + DQPManagementView.VDB_EXT; //$NON-NLS-1$ 
+				deployName = deployName + "." + ((Integer)vdbVersion).toString() + TeiidModuleView.VDB_EXT; //$NON-NLS-1$ 
 			}
 			//add vdb extension if there was no version
-			if (!deployName.endsWith(DQPManagementView.VDB_EXT) &&  !deployName.endsWith(DQPManagementView.DYNAMIC_VDB_EXT)){ 
-				deployName = deployName + DQPManagementView.VDB_EXT;  
+			if (!deployName.endsWith(TeiidModuleView.VDB_EXT) &&  !deployName.endsWith(TeiidModuleView.DYNAMIC_VDB_EXT)){ 
+				deployName = deployName + TeiidModuleView.VDB_EXT;  
 			}
 
 			//null out version 

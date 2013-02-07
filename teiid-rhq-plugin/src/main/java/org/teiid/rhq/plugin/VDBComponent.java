@@ -47,7 +47,7 @@ import org.rhq.core.pluginapi.inventory.ResourceContext;
 import org.rhq.modules.plugins.jbossas7.ASConnection;
 import org.rhq.modules.plugins.jbossas7.json.Address;
 import org.rhq.modules.plugins.jbossas7.json.Result;
-import org.teiid.rhq.admin.DQPManagementView;
+import org.teiid.rhq.admin.TeiidModuleView;
 import org.teiid.rhq.plugin.util.DmrUtil;
 import org.teiid.rhq.plugin.util.PluginConstants;
 import org.teiid.rhq.plugin.util.PluginConstants.ComponentType.Platform;
@@ -123,11 +123,9 @@ public class VDBComponent extends Facet {
 	protected void setOperationArguments(String name,
 			Configuration configuration, Map<String, Object> valueMap) {
 		// Parameter logic for VDB Metrics
-		String key = VDB.NAME;
-		valueMap.put(key, this.resourceConfiguration.getSimpleValue("name",
+		valueMap.put(VDB.NAME, this.resourceConfiguration.getSimpleValue("name",
 				null));
-		String version = VDB.VERSION;
-		valueMap.put(version, this.resourceConfiguration.getSimpleValue(
+		valueMap.put(VDB.VERSION, this.resourceConfiguration.getSimpleValue(
 				VDB.VERSION, null));
 
 		// Parameter logic for VDB Operations
@@ -165,7 +163,7 @@ public class VDBComponent extends Facet {
 	 */
 	@Override
 	public AvailabilityType getAvailability() {
-		LinkedHashMap<String, Object> map = getVdbMap();
+		Map<String, Object> map = getVdbMap(getASConnection(), this.deploymentName, this.resourceConfiguration.getSimple("version").getStringValue());
 		String status = (String) map.get(STATUS);
 		if (status.equals("ACTIVE")) {
 			return AvailabilityType.UP;
@@ -178,15 +176,15 @@ public class VDBComponent extends Facet {
 	protected void setMetricArguments(String name, Configuration configuration,
 			Map<String, Object> valueMap) {
 		// Parameter logic for VDB Metrics
-		String key = VDB.NAME;
-		valueMap.put(key, this.name);
+		valueMap.put(VDB.NAME, this.deploymentName);
+		valueMap.put(VDB.VERSION, this.resourceConfiguration.getSimple("version").getStringValue());
 	}
 
 	@Override
 	public void getValues(MeasurementReport report,
 			Set<MeasurementScheduleRequest> requests) throws Exception {
 
-		DQPManagementView view = new DQPManagementView();
+		TeiidModuleView view = new TeiidModuleView();
 
 		Map<String, Object> valueMap = new HashMap<String, Object>();
 		setMetricArguments(VDB.NAME, null, valueMap);
@@ -283,7 +281,7 @@ public class VDBComponent extends Facet {
 
 		// First update simple properties
 		super.updateResourceConfiguration(report);
-
+//TODO Add VDB update logic 
 		// Then update models
 //		ManagementView managementView = null;
 //		ComponentType componentType = new ComponentType(
@@ -394,7 +392,7 @@ public class VDBComponent extends Facet {
 	@Override
 	public Configuration loadResourceConfiguration() {
 		
-		LinkedHashMap<String, Object> map = getVdbMap();
+		Map<String, Object> map = getVdbMap(getASConnection(), this.deploymentName, this.resourceConfiguration.getSimple("version").getStringValue());
 		
 		String vdbName = (String) map.get(VDBNAME);
 		Integer vdbVersion = (Integer) map.get(VERSION);
@@ -426,14 +424,14 @@ public class VDBComponent extends Facet {
 
 	}
 
-	private LinkedHashMap<String, Object> getVdbMap() {
+	public static Map<String, Object> getVdbMap(ASConnection connection,String vdbName, String vdbVersion) {
 		Address addr = DmrUtil.getTeiidAddress();
 		org.rhq.modules.plugins.jbossas7.json.Operation op = new org.rhq.modules.plugins.jbossas7.json.Operation(Platform.Operations.GET_VDB, addr);
 		Map<String, Object> additionalProperties = new HashMap<String, Object>();
-		additionalProperties.put(VDBNAME, this.deploymentName);
-		additionalProperties.put(VERSION, this.resourceConfiguration.getSimple("version").getStringValue());
+		additionalProperties.put(VDBNAME, vdbName);
+		additionalProperties.put(VERSION, vdbVersion);
 		op.setAdditionalProperties(additionalProperties);
-		Result result = getASConnection().execute(op);
+		Result result = connection.execute(op);
 		LinkedHashMap<String, Object> map = null;
 
 		if (result.isSuccess()){
@@ -453,7 +451,6 @@ public class VDBComponent extends Facet {
 	/**
 	 * @param mcVdb
 	 * @param configuration
-	 * @throws Exception
 	 */
 	private void getModels(Map<String,?> vdbMap, Configuration configuration) {
 	
@@ -601,7 +598,7 @@ public class VDBComponent extends Facet {
 	 * @param configuration
 	 * @throws Exception 
 	 */
-	private void getTranslators(LinkedHashMap<String, Object> map,
+	private void getTranslators(Map<String, Object> map,
 			Configuration configuration) throws Exception {
 		ArrayList<Map<String, Object>> arrayList = (ArrayList<Map<String, Object>> )map.get("override-translators");
 		if (arrayList == null) {
@@ -641,45 +638,10 @@ public class VDBComponent extends Facet {
 		}
 	}
 
-	/**
-	 * @param <T>
-	 * @param pValue
-	 * @param list
-	 */
-//	public static <T> void getPropertyValues(MetaValue pValue,
-//			Collection<Map<String, String>> list) {
-//		Map<String, String> map = new HashMap<String, String>();
-//		list.add(map);
-//		MetaType metaType = pValue.getMetaType();
-//		if (metaType.isCollection()) {
-//			for (MetaValue value : ((CollectionValueSupport) pValue)
-//					.getElements()) {
-//				CompositeValueSupport compValue = ((CompositeValueSupport) value);
-//				for (MetaValue propValue : compValue.values()) {
-//					String propertyName = ((CompositeValueSupport) propValue)
-//							.get("name").toString();
-//					String propertyValue = ((CompositeValueSupport) propValue)
-//							.get("value").toString();
-//					map.put("name", propertyName);
-//					map.put("value", propertyValue);
-//				}
-//			}
-//		} else {
-//			throw new IllegalStateException(pValue
-//					+ " is not a Collection type");
-//		}
-//	}
-
 	@Override
 	public ASConnection getASConnection() {
 		return ((PlatformComponent) this.resourceContext
 				.getParentResourceComponent()).getASConnection();
 	}
-
-//	@Override
-//	public EmsConnection getEmsConnection() {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
 
 }

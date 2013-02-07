@@ -69,6 +69,7 @@ public class VDBDiscoveryComponent implements ResourceDiscoveryComponent {
 		//Iterate through VDBs
 		for (LinkedHashMap<String, Object> map : list) {
 //
+			//TODO Addd proview VDB logic
 //			boolean skipVdb = false;
 //			if (!displayPreviewVdbs.getBooleanValue()){
 //				MetaValue[] propsArray = ((CollectionValueSupport)mcVdb.getProperty("JAXBProperties").getValue()).getElements();
