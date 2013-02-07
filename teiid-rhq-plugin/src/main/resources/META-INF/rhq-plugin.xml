@@ -80,10 +80,11 @@
 			<parent-resource-type name="JBossAS7 Standalone Server"
 				plugin="JBossAS7" />
 		</runs-inside>
-		
+
 		<plugin-configuration>
-        	<c:simple-property name="path" default="subsystem=teiid" readOnly="true"/>
-        </plugin-configuration>
+			<c:simple-property name="path" default="subsystem=teiid"
+				readOnly="true" />
+		</plugin-configuration>
 
 		<operation name="list-long-running-requests" displayName="View current long running queries"
 			description="List current queries executing against the Teiid System that have surpassed the long running query threshhold">
@@ -254,9 +255,9 @@
 			displayType="detail" category="throughput" property="sessionCount"
 			description="The number of user connections currently active." />
 
-<!-- 		<metric displayName="Used Buffer Space" defaultOn="true"
-			displayType="detail" category="throughput" property="userBufferSpace"
-			description="The currently used file buffer space in MB." /> -->
+		<!-- <metric displayName="Used Buffer Space" defaultOn="true" displayType="detail" 
+			category="throughput" property="userBufferSpace" description="The currently 
+			used file buffer space in MB." /> -->
 
 		<metric displayName="Prepared Plan Cache Hit Ratio %"
 			defaultOn="true" displayType="detail" category="performance"
@@ -422,22 +423,26 @@
 
 			<c:group name="JDBCTransportConfiguration" displayName="JDBC Transport Configuration Properties"
 				hiddenByDefault="false">
-				<c:simple-property name="JDBCTransportConfiguration.protocol" default="teiid"
-					displayName="Protocol" description="Transport protocol (allowed=teiid, pg)" required="false"
+				<c:simple-property name="JDBCTransportConfiguration.protocol"
+					default="teiid" displayName="Protocol"
+					description="Transport protocol (allowed=teiid, pg)" required="false"
 					readOnly="false">
 					<c:property-options>
 						<c:option value="teiid" name="Teiid" />
 						<c:option value="pg" name="PostgreSQL" />
 					</c:property-options>
 				</c:simple-property>
-				<c:simple-property name="JDBCTransportConfiguration.pg-max-lob-size-in-bytes"
-					displayName="Postgres Max LOB Size in Bytes" description="Max LOB size in Postgres protocol, as streaming is not supported" required="false"
-					readOnly="false" type="integer"/>
+				<c:simple-property
+					name="JDBCTransportConfiguration.pg-max-lob-size-in-bytes"
+					displayName="Postgres Max LOB Size in Bytes"
+					description="Max LOB size in Postgres protocol, as streaming is not supported"
+					required="false" readOnly="false" type="integer" />
 				<c:simple-property name="JDBCTransportConfiguration.socket-binding"
-					displayName="Socket Binding" description="Socket binding to be used for the transport" required="false"
-					readOnly="false" />
+					displayName="Socket Binding" description="Socket binding to be used for the transport"
+					required="false" readOnly="false" />
 				<c:simple-property name="JDBCTransportConfiguration.max-socket-threads"
-					displayName="Max Socket Threads" description="Max number of threads dedicated to initial request processing. Zero indicates the system default of max available processors. (default 0)  Setting this value above the max available processors is not recommended."
+					displayName="Max Socket Threads"
+					description="Max number of threads dedicated to initial request processing. Zero indicates the system default of max available processors. (default 0)  Setting this value above the max available processors is not recommended."
 					required="false" readOnly="false" type="integer" />
 				<c:simple-property name="JDBCTransportConfiguration.input-buffer-size"
 					displayName="Input Buffer Size"
@@ -458,9 +463,9 @@
 						<c:option value="login" name="Login" />
 					</c:property-options>
 				</c:simple-property>
-				<c:simple-property name="JDBCTransportConfiguration.ssl-authentication-mode"
-					displayName="SSL Authentication Mode"
-					description="Authentication Mode (1-way, 2-way, anonymous)"
+				<c:simple-property
+					name="JDBCTransportConfiguration.ssl-authentication-mode"
+					displayName="SSL Authentication Mode" description="Authentication Mode (1-way, 2-way, anonymous)"
 					required="false" readOnly="false" default="1-way">
 					<c:property-options>
 						<c:option value="1-way" name="1-way" />
@@ -469,47 +474,50 @@
 					</c:property-options>
 				</c:simple-property>
 				<c:simple-property name="JDBCTransportConfiguration.ssl-ssl-protocol"
-					displayName="SSL Protocol"
-					description="SSL protocol for this transport."
-					required="false" readOnly="false"/>
+					displayName="SSL Protocol" description="SSL protocol for this transport."
+					required="false" readOnly="false" />
 				<!-- SSL end -->
 				<!-- Security start -->
-				<c:simple-property name="JDBCTransportConfiguration.authentication-security-domain"
-					displayName="Security Domain"
-					description="Security domain to be enforced with the transport"
-					required="false" readOnly="false"/>
-				<c:simple-property name="JDBCTransportConfiguration.authentication-max-sessions-allowed"
+				<c:simple-property
+					name="JDBCTransportConfiguration.authentication-security-domain"
+					displayName="Security Domain" description="Security domain to be enforced with the transport"
+					required="false" readOnly="false" />
+				<c:simple-property
+					name="JDBCTransportConfiguration.authentication-max-sessions-allowed"
 					displayName="Max Sessions Allowed"
 					description="Maximum number of sessions allowed by the system (default 5000)."
-					required="false" readOnly="false" type="integer" default="5000"/>
-				<c:simple-property name="JDBCTransportConfiguration.authentication-sessions-expiration-timelimit"
+					required="false" readOnly="false" type="integer" default="5000" />
+				<c:simple-property
+					name="JDBCTransportConfiguration.authentication-sessions-expiration-timelimit"
 					displayName="Session Expiration Timelimit"
 					description="Max allowed time before the session is terminated by the system, 0 indicates unlimited (default 0)."
-					required="false" readOnly="false" type="integer" default="0"/>
-			    <c:simple-property name="JDBCTransportConfiguration.keystore-type"
-					displayName="Keystore Type"
-					description="Keystore type."
-					required="false" readOnly="false"/>
+					required="false" readOnly="false" type="integer" default="0" />
+				<c:simple-property name="JDBCTransportConfiguration.keystore-type"
+					displayName="Keystore Type" description="Keystore type." required="false"
+					readOnly="false" />
 				<!-- Security end -->
 			</c:group>
 			<c:group name="ODBCTransportConfiguration" displayName="ODBC Transport Configuration Properties"
 				hiddenByDefault="false">
 				<c:simple-property name="ODBCTransportConfiguration.protocol"
-					displayName="Protocol" description="Transport protocol (allowed=teiid, pg)" required="false"
-					readOnly="false" default="teiid">
+					displayName="Protocol" description="Transport protocol (allowed=teiid, pg)"
+					required="false" readOnly="false" default="teiid">
 					<c:property-options>
 						<c:option value="teiid" name="Teiid" />
 						<c:option value="pg" name="Postgres" />
 					</c:property-options>
 				</c:simple-property>
-				<c:simple-property name="ODBCTransportConfiguration.pg-max-lob-size-in-bytes"
-					displayName="Postgres Max LOB Size in Bytes" description="Max LOB size in Postgres protocol, as streaming is not supported" required="false"
-					readOnly="false" type="integer"/>
+				<c:simple-property
+					name="ODBCTransportConfiguration.pg-max-lob-size-in-bytes"
+					displayName="Postgres Max LOB Size in Bytes"
+					description="Max LOB size in Postgres protocol, as streaming is not supported"
+					required="false" readOnly="false" type="integer" />
 				<c:simple-property name="ODBCTransportConfiguration.socket-binding"
-					displayName="Socket Binding" description="Socket binding to be used for the transport" required="false"
-					readOnly="false" />
+					displayName="Socket Binding" description="Socket binding to be used for the transport"
+					required="false" readOnly="false" />
 				<c:simple-property name="ODBCTransportConfiguration.max-socket-threads"
-					displayName="Max Socket Threads" description="Max number of threads dedicated to initial request processing. Zero indicates the system default of max available processors. (default 0)  Setting this value above the max available processors is not recommended."
+					displayName="Max Socket Threads"
+					description="Max number of threads dedicated to initial request processing. Zero indicates the system default of max available processors. (default 0)  Setting this value above the max available processors is not recommended."
 					required="false" readOnly="false" type="integer" />
 				<c:simple-property name="ODBCTransportConfiguration.input-buffer-size"
 					displayName="Input Buffer Size"
@@ -530,7 +538,8 @@
 						<c:option value="login" name="Login" />
 					</c:property-options>
 				</c:simple-property>
-				<c:simple-property name="ODBCTransportConfiguration.ssl-authentication-mode"
+				<c:simple-property
+					name="ODBCTransportConfiguration.ssl-authentication-mode"
 					displayName="SSL Authentication Mode" default="1-way"
 					description="Authentication Mode (1-way, 2-way, anonymous)"
 					required="false" readOnly="false">
@@ -541,34 +550,34 @@
 					</c:property-options>
 				</c:simple-property>
 				<c:simple-property name="ODBCTransportConfiguration.ssl-ssl-protocol"
-					displayName="SSL Protocol"
-					description="SSL protocol for this transport."
-					required="false" readOnly="false"/>
+					displayName="SSL Protocol" description="SSL protocol for this transport."
+					required="false" readOnly="false" />
 				<!-- SSL end -->
 				<!-- Security start -->
-				<c:simple-property name="ODBCTransportConfiguration.authentication-security-domain"
-					displayName="Security Domain"
-					description="Security domain to be enforced with the transport"
-					required="false" readOnly="false"/>
-				<c:simple-property name="ODBCTransportConfiguration.authentication-max-sessions-allowed"
+				<c:simple-property
+					name="ODBCTransportConfiguration.authentication-security-domain"
+					displayName="Security Domain" description="Security domain to be enforced with the transport"
+					required="false" readOnly="false" />
+				<c:simple-property
+					name="ODBCTransportConfiguration.authentication-max-sessions-allowed"
 					displayName="Max Sessions Allowed"
 					description="Maximum number of sessions allowed by the system (default 5000)."
-					required="false" readOnly="false" type="integer" default="5000"/>
-				<c:simple-property name="ODBCTransportConfiguration.authentication-sessions-expiration-timelimit"
+					required="false" readOnly="false" type="integer" default="5000" />
+				<c:simple-property
+					name="ODBCTransportConfiguration.authentication-sessions-expiration-timelimit"
 					displayName="Session Expiration Timelimit"
 					description="Max allowed time before the session is terminated by the system, 0 indicates unlimited (default 0)."
-					required="false" readOnly="false" type="integer" default="0"/>
-			    <c:simple-property name="ODBCTransportConfiguration.keystore-type"
-					displayName="Keystore Type"
-					description="Keystore type."
-					required="false" readOnly="false"/>
+					required="false" readOnly="false" type="integer" default="0" />
+				<c:simple-property name="ODBCTransportConfiguration.keystore-type"
+					displayName="Keystore Type" description="Keystore type." required="false"
+					readOnly="false" />
 				<!-- Security end -->
 			</c:group>
 		</resource-configuration>
 
 		<service name="Virtual Database (VDB)s" description="Teiid Data Services Virtual Databases"
 			class="VDBComponent" discovery="VDBDiscoveryComponent">
-		<!-- 	createDeletePolicy="both" creationDataType="content"> -->
+			<!-- createDeletePolicy="both" creationDataType="content"> -->
 
 			<operation name="getSessions" displayName="View VDB Sessions"
 				description="Get current sessions currently connected to this VDB">
@@ -628,14 +637,13 @@
 							<c:simple-property displayName="Node ID" name="node-id"
 								type="string" description="The node identifier" />
 							<c:simple-property displayName="Transaction identifier"
-								name="xid" type="string"
-								description="Transaction XID if a transaction is involved" />
+								name="xid" type="string" description="Transaction XID if a transaction is involved" />
 						</c:map-property>
 					</c:list-property>
 				</results>
 			</operation>
 
-		    <operation name="getMaterializedViews" displayName="List Materialized View Info"
+			<operation name="getMaterializedViews" displayName="List Materialized View Info"
 				description="List any Materialized Views for this VDB">
 
 				<results>
@@ -663,9 +671,9 @@
 						</c:map-property>
 					</c:list-property>
 				</results>
-			</operation> 
+			</operation>
 
-		    <operation name="reloadMaterializedView" displayName="Refresh a Materialized View"
+			<operation name="reloadMaterializedView" displayName="Refresh a Materialized View"
 				description="Refresh a given Materialized View for this VDB">
 				<parameters>
 					<c:simple-property displayName="Materialized View Schema"
@@ -692,8 +700,7 @@
 						type="string" required="true" description="The cache type to clear"
 						default="QUERY_SERVICE_RESULT_SET_CACHE">
 						<c:property-options>
-							<c:option value="QUERY_SERVICE_RESULT_SET_CACHE"
-								name="Result Set" />
+							<c:option value="QUERY_SERVICE_RESULT_SET_CACHE" name="Result Set" />
 							<c:option value="PREPARED_PLAN_CACHE" name="Prepared Plan" />
 						</c:property-options>
 					</c:simple-property>
@@ -712,6 +719,18 @@
 			<metric displayName="Errors" defaultOn="true" dataType="trait"
 				displayType="summary" category="availability" property="errorCount"
 				description="Whether or not errors exist for this VDB" />
+
+			<metric displayName="Query Count" defaultOn="true"
+				displayType="detail" category="throughput" property="queryCount"
+				description="The number of queries currently active." />
+
+			<metric displayName="Long Running Queries" defaultOn="true"
+				displayType="detail" category="performance" property="longRunningQueries"
+				description="The number of queries that have been running longer than the limit set for queries." />
+
+			<metric displayName="Session Count" defaultOn="true"
+				displayType="detail" category="throughput" property="sessionCount"
+				description="The number of user connections currently active." />
 
 			<content name="vdb" displayName="VDB File" category="deployable"
 				isCreationType="true">
@@ -737,10 +756,10 @@
 						readOnly="true" />
 					<c:simple-property name="status" type="string"
 						description="The Virtual Database Status" required="false"
-						summary="true" readOnly="true"/>
+						summary="true" readOnly="true" />
 					<c:simple-property name="dynamic" type="boolean"
 						description="True if this ia a dynamic Virtual Database" required="false"
-						summary="true" readOnly="true" default="INACTIVE">	
+						summary="true" readOnly="true" default="INACTIVE">
 						<c:property-options>
 							<c:option value="ACTIVE" name="UP" />
 							<c:option value="INACTIVE" name="DOWN" />
@@ -768,8 +787,9 @@
 								readOnly="true" />
 							<c:simple-property name="type" displayName="Translator type"
 								description="Translator type" required="false" readOnly="true" />
-							<c:simple-property name="moduleName" displayName="Module Name"
-								description="Module Name" required="false" readOnly="true" />
+							<c:simple-property name="moduleName"
+								displayName="Module Name" description="Module Name" required="false"
+								readOnly="true" />
 							<c:simple-property name="propertyName"
 								displayName="Property Name" description="Property Name"
 								required="false" readOnly="true" />
@@ -851,48 +871,52 @@
 				createDeletePolicy="neither" creationDataType="configuration">
 
 				<resource-configuration>
-				<c:group name="general" displayName="General"
-					hiddenByDefault="false">
-					<c:simple-property name="name" displayName="Name"
-						description="Name of the data role" readOnly="true" required="false" />
-					<c:simple-property name="description"
-						displayName="Description" type="string" description="Description of this data role"
-						readOnly="true" required="false" />
-					<c:simple-property name="anyAuthenticated"
-						displayName="Any Authenticated" type="boolean"
-						description="Indicates if the role is mapped to any authenticated user"
-						readOnly="false" required="false" />
-					<c:simple-property name="allowCreateTempTables"
-						displayName="Allow Temp Table Creation" type="boolean"
-						description="Indicates if the role allows the creation of temporary tables"
-						readOnly="false" required="false" />
-				</c:group>
-				<c:group name="dataPermissions" displayName="Data Permissions"
-					hiddenByDefault="false">		
-					<c:list-property name="dataPermissionsList"
-						readOnly="false" required="false" displayName="Data Permissions"
-						description="Data permissions for this data role">
-						<c:map-property name="map" readOnly="false">
-							<c:simple-property name="resourceName" displayName="Resource Name"
-								description="Name of the resource" readOnly="true" />
-						<c:simple-property name="allowCreate" displayName="Allow Create"
-								description="True if create is allowed" type="boolean" readOnly="true" />
-						<c:simple-property name="allowUpdate" displayName="Allow Update"
-								description="True if update is allowed" type="boolean" readOnly="true" />				
-						<c:simple-property name="allowRead" displayName="Allow Read"
-								description="True if read is allowed" type="boolean" readOnly="true" />	
-						</c:map-property>
-					</c:list-property>	
-				</c:group>
-				<c:group name="mappedRole" displayName="Mapped Roles"
-					hiddenByDefault="false">		
-					<c:list-property name="mappedRoleNameList"
-						readOnly="false" required="false" displayName="Mapped Role Names"
-						description="Mapped role names for this data role">
+					<c:group name="general" displayName="General"
+						hiddenByDefault="false">
 						<c:simple-property name="name" displayName="Name"
-							description="Name of this mapped role" readOnly="true" />
-					</c:list-property>
-				</c:group>
+							description="Name of the data role" readOnly="true" required="false" />
+						<c:simple-property name="description"
+							displayName="Description" type="string" description="Description of this data role"
+							readOnly="true" required="false" />
+						<c:simple-property name="anyAuthenticated"
+							displayName="Any Authenticated" type="boolean"
+							description="Indicates if the role is mapped to any authenticated user"
+							readOnly="false" required="false" />
+						<c:simple-property name="allowCreateTempTables"
+							displayName="Allow Temp Table Creation" type="boolean"
+							description="Indicates if the role allows the creation of temporary tables"
+							readOnly="false" required="false" />
+					</c:group>
+					<c:group name="dataPermissions" displayName="Data Permissions"
+						hiddenByDefault="false">
+						<c:list-property name="dataPermissionsList"
+							readOnly="false" required="false" displayName="Data Permissions"
+							description="Data permissions for this data role">
+							<c:map-property name="map" readOnly="false">
+								<c:simple-property name="resourceName"
+									displayName="Resource Name" description="Name of the resource"
+									readOnly="true" />
+								<c:simple-property name="allowCreate"
+									displayName="Allow Create" description="True if create is allowed"
+									type="boolean" readOnly="true" />
+								<c:simple-property name="allowUpdate"
+									displayName="Allow Update" description="True if update is allowed"
+									type="boolean" readOnly="true" />
+								<c:simple-property name="allowRead"
+									displayName="Allow Read" description="True if read is allowed"
+									type="boolean" readOnly="true" />
+							</c:map-property>
+						</c:list-property>
+					</c:group>
+					<c:group name="mappedRole" displayName="Mapped Roles"
+						hiddenByDefault="false">
+						<c:list-property name="mappedRoleNameList"
+							readOnly="false" required="false" displayName="Mapped Role Names"
+							description="Mapped role names for this data role">
+							<c:simple-property name="name" displayName="Name"
+								description="Name of this mapped role" readOnly="true" />
+						</c:list-property>
+					</c:group>
 				</resource-configuration>
 
 			</service>
@@ -907,7 +931,8 @@
 				<c:simple-property name="name" displayName="Name"
 					description="Name of the translator" readOnly="true" required="false" />
 				<c:simple-property name="moduleName" displayName="Module Name"
-					description="Name of the module used by the translator" readOnly="true" required="false" />
+					description="Name of the module used by the translator" readOnly="true"
+					required="false" />
 				<c:simple-property name="description" displayName="Description"
 					description="Description the translator" readOnly="true" required="false" />
 
