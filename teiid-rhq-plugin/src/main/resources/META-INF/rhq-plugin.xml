@@ -81,11 +81,6 @@
 				plugin="JBossAS7" />
 		</runs-inside>
 
-		<plugin-configuration>
-			<c:simple-property name="path" default="subsystem=teiid"
-				readOnly="true" />
-		</plugin-configuration>
-
 		<operation name="list-long-running-requests" displayName="View current long running queries"
 			description="List current queries executing against the Teiid System that have surpassed the long running query threshhold">
 			<results>
@@ -284,14 +279,16 @@
 			property="QUERY_SERVICE_RESULT_SET_CACHE.request-count" description="Total number of requests made against cache" />
 
 		<resource-configuration>
-			<!-- displayPreviewVDBS no longer stored in Teiid as of 8.x. May add back 
-				later on the plugin side. -->
-			<!-- <c:group name="SessionSettings" displayName="Settings for the Data 
-				Services plugin. Will be reset with a server restart." hiddenByDefault="false"> 
-				<c:simple-property name="displayPreviewVDBS" displayName="Display Preview 
-				VDBs" description="If 'Yes', Preview VDBs (created by the Teiid Designer) 
-				will display in the Virtual Database resource grouping. The default is 'No'" 
-				required="true" readOnly="false" type="boolean" default="true" /> </c:group> -->
+			<c:group name="SessionSettings"
+				displayName="Settings for the Data 
+				Services plugin. Will be reset with a server restart."
+				hiddenByDefault="false">
+				<c:simple-property name="displayPreviewVDBS"
+					displayName="Display Preview VDBs"
+					description="If 'Yes', Preview VDBs (created by the Teiid Designer) 
+				will display in the Virtual Database resource grouping. The default is 'No'"
+					required="false" readOnly="false" type="boolean" default="true" />
+			</c:group>
 
 			<c:group name="RuntimeEngineDeployer"
 				displayName="Runtime Engine Properties (restart required before modifications take effect)"

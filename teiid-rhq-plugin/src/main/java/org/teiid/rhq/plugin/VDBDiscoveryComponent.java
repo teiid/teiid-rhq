@@ -24,6 +24,7 @@ package org.teiid.rhq.plugin;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -63,37 +64,29 @@ public class VDBDiscoveryComponent implements ResourceDiscoveryComponent {
 		Operation op = new Operation(Platform.Operations.LIST_VDBS, addr);
 		Result result = connection.execute(op);
 		ArrayList<LinkedHashMap> list = (ArrayList<LinkedHashMap>) result.getResult();
-//		
-//		PropertySimple displayPreviewVdbs = ((PlatformComponent)discoveryContext.getParentResourceComponent()).getResourceConfiguration().getSimple("displayPreviewVDBS");
-//		
+		
+		PropertySimple displayPreviewVdbs = ((PlatformComponent)discoveryContext.getParentResourceComponent()).getResourceConfiguration().getSimple(PlatformComponent.DISPLAY_PREVIEW_VDBS);
+		
 		//Iterate through VDBs
 		for (LinkedHashMap<String, Object> map : list) {
-//
-			//TODO Addd proview VDB logic
-//			boolean skipVdb = false;
-//			if (!displayPreviewVdbs.getBooleanValue()){
-//				MetaValue[] propsArray = ((CollectionValueSupport)mcVdb.getProperty("JAXBProperties").getValue()).getElements();
-//				String isPreview = "false";
-//				
-//				for (MetaValue propertyMetaData : map) {
-//					GenericValueSupport genValueSupport = (GenericValueSupport) propertyMetaData;
-//					ManagedObjectImpl managedObject = (ManagedObjectImpl) genValueSupport
-//							.getValue();
-//	
-//					String propertyName = ProfileServiceUtil.getSimpleValue(
-//							managedObject, "name", String.class);
-//					if (propertyName.equals("preview")){
-//						isPreview =ProfileServiceUtil.getSimpleValue(
-//								managedObject, "value", String.class);
-//						if (Boolean.valueOf(isPreview)) skipVdb=true;
-//						break;
-//					}
-//				}	
-//			}
-//				
-//			//If this is a Preview VDB and displayPreviewVdbs is false, skip this VDB
-//			if (skipVdb) continue;
-//				
+
+			boolean skipVdb = false;
+			if (!displayPreviewVdbs.getBooleanValue()){
+				ArrayList<Map <String, Object>> properties = (ArrayList<Map <String, Object>>) map.get(VDBComponent.PROPERTIES);
+				if (properties != null) {
+					for (Map <String, Object> propertyMap : properties) {
+						String propertyName = (String) propertyMap.get(VDBComponent.PROPERTY_NAME);
+						if (!propertyName.equals("preview")) continue;
+						Boolean propertyValue = (Boolean) propertyMap.get(VDBComponent.PROPERTY_VALUE);
+						if (propertyValue.equals(Boolean.TRUE)) skipVdb=true;
+						break;
+					}
+				}	
+			}
+				
+			//If this is a Preview VDB and displayPreviewVdbs is false, skip this VDB
+			if (skipVdb) continue;
+				
 			String vdbKey = (String) map.get(VDBComponent.VDBNAME);
 			String vdbName = vdbKey;
 			Integer vdbVersion = (Integer) map.get(VDBComponent.VERSION);
