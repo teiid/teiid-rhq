@@ -36,6 +36,8 @@ import org.rhq.core.domain.measurement.AvailabilityType;
 import org.rhq.core.domain.measurement.MeasurementDataNumeric;
 import org.rhq.core.domain.measurement.MeasurementReport;
 import org.rhq.core.domain.measurement.MeasurementScheduleRequest;
+import org.rhq.core.pluginapi.configuration.ConfigurationFacet;
+import org.rhq.core.pluginapi.configuration.ConfigurationUpdateReport;
 import org.rhq.core.pluginapi.inventory.ResourceContext;
 import org.rhq.modules.plugins.jbossas7.ASConnection;
 import org.rhq.modules.plugins.jbossas7.BaseComponent;
@@ -57,6 +59,7 @@ public class PlatformComponent extends Facet {
 	public static final String JDBC_TRANSPORT_CONFIGURATION = "JDBCTransportConfiguration";
 	public static final String DOT = ".";
 	private final Log LOG = LogFactory.getLog(PluginConstants.DEFAULT_LOGGER_CATEGORY);
+	static final String DISPLAY_PREVIEW_VDBS = "displayPreviewVDBS";
 
 	@Override
 	public void start(ResourceContext context) {
@@ -168,6 +171,23 @@ public class PlatformComponent extends Facet {
 
 	}
 
+
+	/**
+	 * The plugin container will call this method when it has a new
+	 * configuration for your managed resource. Your plugin will re-configure
+	 * the managed resource in your own custom way, setting its configuration
+	 * based on the new values of the given configuration.
+	 * 
+	 * @see ConfigurationFacet#updateResourceConfiguration(ConfigurationUpdateReport)
+	 */
+	public void updateResourceConfiguration(ConfigurationUpdateReport report) {
+
+		Configuration resourceConfig = report.getConfiguration();
+		resourceConfiguration = resourceConfig.deepCopy();
+
+		super.updateResourceConfiguration(report);
+	}
+	
 	/**
 	 * @param mc
 	 * @param configuration

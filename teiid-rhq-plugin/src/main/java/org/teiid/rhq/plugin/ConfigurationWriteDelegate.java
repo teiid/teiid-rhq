@@ -194,9 +194,11 @@ public class ConfigurationWriteDelegate implements ConfigurationFacet {
 	private void updateProperty(Configuration conf, CompositeOperation cop,
 			PropertyDefinition propDef, Address baseAddress) {
 
-		// Skip over read-only properties, the AS can not use them anyway
-		if (propDef.isReadOnly())
+		// Skip over read-only properties, the AS can not use them anyway. Also skip DisplayPreviewVdbs since
+		// this is only maintained in the plugin.
+		if (propDef.isReadOnly() || propDef.getName().equals(PlatformComponent.DISPLAY_PREVIEW_VDBS))
 			return;
+		
 
 		// Handle the special case
 		String propDefName = propDef.getName();

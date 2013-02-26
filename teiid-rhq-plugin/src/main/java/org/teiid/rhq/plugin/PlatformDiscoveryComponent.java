@@ -22,8 +22,6 @@
 package org.teiid.rhq.plugin;
 
 import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -31,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.rhq.core.domain.configuration.Configuration;
+import org.rhq.core.domain.configuration.PropertySimple;
 import org.rhq.core.pluginapi.inventory.DiscoveredResourceDetails;
 import org.rhq.core.pluginapi.inventory.ResourceDiscoveryComponent;
 import org.rhq.core.pluginapi.inventory.ResourceDiscoveryContext;
@@ -68,7 +67,7 @@ public class PlatformDiscoveryComponent implements
 			ResourceDiscoveryContext<BaseComponent<?>> context)
 			throws Exception {
 
-		Set<DiscoveredResourceDetails> details = new HashSet<DiscoveredResourceDetails>();
+		Set<DiscoveredResourceDetails> discoveredResources = new HashSet<DiscoveredResourceDetails>();
 
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.configure(
@@ -91,8 +90,6 @@ public class PlatformDiscoveryComponent implements
 				version = versionResult.getResult().toString();
 			}
 
-			@SuppressWarnings("unchecked")
-		
 			DiscoveredResourceDetails detail = new DiscoveredResourceDetails(
 					context.getResourceType(), // DataType
 					"teiid", // Key
@@ -100,10 +97,16 @@ public class PlatformDiscoveryComponent implements
 					version, // Version
 					context.getResourceType().getDescription() + " : " + version, // subsystem.description
 					config, null);
-			details.add(detail);
-		}
+			Configuration configuration = detail.getPluginConfiguration();
+			configuration.put(new PropertySimple( "displayPreviewVDBS", Boolean.FALSE));
+			detail.setPluginConfiguration(configuration);
 
-		return details;
+			// Add to return values
+			discoveredResources.add(detail);
+		}
+		
+		log.debug("Discovered Teiid instance"); //$NON-NLS-1$
+		return discoveredResources;
 	}
 
 

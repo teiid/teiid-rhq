@@ -401,7 +401,7 @@ public class VDBComponent extends Facet {
 		Boolean isDynamic = (Boolean) map.get(DYNAMIC);
 		
 		// Get plugin config map for models
-		Configuration configuration = resourceContext.getPluginConfiguration();
+		Configuration configuration = this.getResourceConfiguration();
 
 		configuration.put(new PropertySimple("name", vdbName));
 		configuration.put(new PropertySimple("version", vdbVersion));
