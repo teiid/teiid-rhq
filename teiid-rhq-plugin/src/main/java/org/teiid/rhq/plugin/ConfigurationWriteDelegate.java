@@ -21,6 +21,7 @@ package org.teiid.rhq.plugin;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +50,9 @@ import org.rhq.modules.plugins.jbossas7.json.ReadChildrenResources;
 import org.rhq.modules.plugins.jbossas7.json.Remove;
 import org.rhq.modules.plugins.jbossas7.json.Result;
 import org.rhq.modules.plugins.jbossas7.json.WriteAttribute;
+import org.teiid.rhq.admin.TeiidModuleView;
 import org.teiid.rhq.plugin.util.DmrUtil;
+import org.teiid.rhq.plugin.util.PluginConstants.ComponentType.VDB;
 
 public class ConfigurationWriteDelegate implements ConfigurationFacet {
 
@@ -71,6 +74,8 @@ public class ConfigurationWriteDelegate implements ConfigurationFacet {
 	private boolean addNewChildren;
 	private boolean addDeleteModifiedChildren;
 	protected boolean createChildRequested = false;
+	
+	private Map<String, String> propertiesMap = new HashMap<String, String>();
 
 	/**
 	 * Create a new configuration delegate, that reads the attributes for the
@@ -126,11 +131,6 @@ public class ConfigurationWriteDelegate implements ConfigurationFacet {
 						"The server needs a reload for the latest changes to come effective.");
 				conf.put(oobMessage);
 			}
-			// if (result.isRestartRequired()) {
-			// PropertySimple oobMessage = new PropertySimple("__OOB",
-			// "The server needs a restart for the latest changes to come effective.");
-			// conf.put(oobMessage);
-			// }
 		}
 	}
 
@@ -176,7 +176,7 @@ public class ConfigurationWriteDelegate implements ConfigurationFacet {
 
 				continue;
 			}
-
+			
 			else {// handle the base case with no special case handling
 					// get the properties from within the group and update as
 					// usual.
@@ -200,82 +200,23 @@ public class ConfigurationWriteDelegate implements ConfigurationFacet {
 			return;
 		
 
-		// Handle the special case
 		String propDefName = propDef.getName();
-		if (propDef instanceof PropertyDefinitionList
-				&& propDefName.startsWith("*")) {
-			propDef = ((PropertyDefinitionList) propDef).getMemberDefinition();
-			PropertyList pl = (PropertyList) conf.get(propDefName);
+		
+		Property prop = conf.get(propDefName);
 
-			// check if we need to see if that property exists - get the current
-			// state of affairs from the AS
-			List<String> existingPropnames = new ArrayList<String>();
-			if (addNewChildren) {
-				Operation op = new ReadChildrenResources(baseAddress, type);
-				Result tmp = connection.execute(op);
-				if (tmp.isSuccess()) {
-					Map<String, Object> tmpResMap = (Map<String, Object>) tmp
-							.getResult();
-					existingPropnames.addAll(tmpResMap.keySet());
-				}
-			}
-
-			// Loop over the list - i.e. the individual rows that come from the
-			// server
-			for (Property prop2 : pl.getList()) {
-				updateHandlePropertyMapSpecial(cop, (PropertyMap) prop2,
-						(PropertyDefinitionMap) propDef, baseAddress,
-						existingPropnames);
-			}
-			// now check about removed properties
-			for (String existingName : existingPropnames) {
-				boolean found = false;
-				for (Property prop2 : pl.getList()) {
-					PropertyMap propMap2 = (PropertyMap) prop2;
-					String itemName = propMap2.getSimple(namePropLocator)
-							.getStringValue();
-					if (itemName == null) {
-						throw new IllegalArgumentException(
-								"Map contains no entry with name ["
-										+ namePropLocator + "]");
-					}
-					if (itemName.equals(existingName)) {
-						found = true;
-						break;
-					}
-				}
-				// We may still have an entry in the map, that does not
-				// match an existing name, but is marked as immutable
-				if (!found) {
-					for (Property prop2 : pl.getList()) {
-						PropertyMap propMap2 = (PropertyMap) prop2;
-						String itemName = propMap2.getSimple(namePropLocator)
-								.getStringValue();
-						String errorMessage = propMap2.getErrorMessage();
-						boolean contains = existingPropnames.contains(itemName);
-						if (!contains && LOGICAL_REMOVED.equals(errorMessage)) {
-							found = true; // we pretend this still exists on the
-											// server, so nothing to update
-						}
-					}
-				}
-
-				// In properties on server and not in map or immutable, lets
-				// remove it
-				if (!found) {
-					Address tmpAddr = new Address(baseAddress);
-					tmpAddr.add(type, existingName);
-					Operation operation = new Operation("remove", tmpAddr);
-					cop.addStep(operation);
-				}
-			}
-
-		} else {
-			// Normal cases
-			Property prop = conf.get(propDefName);
-
+		//If the VDB connection type was change, execute the operation to update it.
+		if (propDefName.equals("connectionType")){
+			Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
+			additionalProperties.put(VDBComponent.VDBNAME, getPropertiesMap().get(VDB.NAME));
+			additionalProperties.put(VDBComponent.VERSION, getPropertiesMap().get(VDB.VERSION));
+			additionalProperties.put(VDBComponent.CONNECTIONTYPE, ((PropertySimple)prop).getStringValue());
+			TeiidModuleView.executeOperation(connection, VDB.Operations.CHANGE_VDB_CONN_TYPE, DmrUtil.getTeiidAddress(), additionalProperties);
+		}else if (propDefName.equals("sourceName") || propDefName.equals("translatorName") || propDefName.equals("jndiName")){
+			//Skip these. These where updated via an operation
+		}else{
 			createWriteAttribute(cop, baseAddress, propDef, prop);
 		}
+		
 	}
 
 	private void createWriteAttribute(CompositeOperation cop,
@@ -687,5 +628,13 @@ public class ConfigurationWriteDelegate implements ConfigurationFacet {
 			}
 		}
 		return name;
+	}
+
+	public Map getPropertiesMap() {
+		return propertiesMap;
+	}
+
+	public void setPropertiesMap(Map propertiesMap) {
+		this.propertiesMap = propertiesMap;
 	}
 }

@@ -486,7 +486,7 @@ public class TeiidModuleView implements PluginConstants {
 		return (List<Map<String, Object>>) result.getResult();
 	}
 	
-	private Result executeOperation(ASConnection connection, String operationName, Address operationAddress, Map<String, Object> additionalProperties) {
+	public static Result executeOperation(ASConnection connection, String operationName, Address operationAddress, Map<String, Object> additionalProperties) {
 		org.rhq.modules.plugins.jbossas7.json.Operation op = new org.rhq.modules.plugins.jbossas7.json.Operation(operationName, operationAddress);
         if (additionalProperties!=null){
         	op.setAdditionalProperties(additionalProperties);
