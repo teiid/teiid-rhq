@@ -165,6 +165,12 @@ public class PlatformComponent extends Facet {
 		// Get plugin config
 		Configuration c = resourceConfiguration;
 		
+		PropertySimple propSimple = resourceConfiguration.getSimple(DISPLAY_PREVIEW_VDBS);
+		
+		if (propSimple.getStringValue()==null){
+			c.put(new PropertySimple( DISPLAY_PREVIEW_VDBS, Boolean.FALSE));
+		}
+		
 		getProperties(c);
 
 		return c;

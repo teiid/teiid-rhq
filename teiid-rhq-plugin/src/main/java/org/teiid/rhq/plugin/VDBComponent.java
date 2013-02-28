@@ -24,13 +24,17 @@ package org.teiid.rhq.plugin;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.rhq.core.domain.configuration.Configuration;
+import org.rhq.core.domain.configuration.ConfigurationUpdateStatus;
+import org.rhq.core.domain.configuration.Property;
 import org.rhq.core.domain.configuration.PropertyList;
 import org.rhq.core.domain.configuration.PropertyMap;
 import org.rhq.core.domain.configuration.PropertySimple;
@@ -85,6 +89,7 @@ public class VDBComponent extends Facet {
 	public static final String SOURCE_MAPPINGS = "source-mappings"; //$NON-NLS-1$
 	public static final String SOURCE_NAME = "source-name"; //$NON-NLS-1$
 	public static final String JNDI_NAME = "jndi-name"; //$NON-NLS-1$
+	public static final String DS_NAME = "ds-name"; //$NON-NLS-1$
 	public static final String VALIDITY_ERRORS = "validity-errors"; //$NON-NLS-1$
 	public static final String SEVERITY = "severity"; //$NON-NLS-1$
 	public static final String MESSAGE = "message"; //$NON-NLS-1$
@@ -277,114 +282,54 @@ public class VDBComponent extends Facet {
 
 		Configuration resourceConfig = report.getConfiguration();
 		resourceConfiguration = resourceConfig.deepCopy();
+		
+		String vdbName = this.resourceConfiguration.getSimpleValue("name", null);
+		String vdbVersion = this.resourceConfiguration.getSimpleValue(VDB.VERSION, null);
+		
+		getPropertiesMap().put(VDB.NAME, vdbName);
+		getPropertiesMap().put(VDB.VERSION, vdbVersion);
 
 		// First update simple properties
 		super.updateResourceConfiguration(report);
-//TODO Add VDB update logic 
+
 		// Then update models
-//		ManagementView managementView = null;
-//		ComponentType componentType = new ComponentType(
-//				PluginConstants.ComponentType.VDB.TYPE,
-//				PluginConstants.ComponentType.VDB.SUBTYPE);
-//
-//		ManagedComponent managedComponent = null;
-//		CollectionValueSupport modelsMetaValue = null;
-//		report.setStatus(ConfigurationUpdateStatus.SUCCESS);
-//		try {
-//
-//			managementView = getASConnection().getManagementView();
-//			managedComponent = managementView.getComponent(this.name,
-//					componentType);
-//			modelsMetaValue = (CollectionValueSupport) managedComponent
-//					.getProperty("models").getValue();
-//			GenericValue[] models = (GenericValue[]) modelsMetaValue
-//					.getElements();
-//			List<Property> multiSourceModelsPropertyList = resourceConfiguration
-//					.getList("multiSourceModels").getList();
-//			List<Property> singleSourceModelsPropertyList = resourceConfiguration
-//					.getList("singleSourceModels").getList();
-//			ArrayList<List<Property>> sourceMappingList = new ArrayList<List<Property>>();
-//			sourceMappingList.add(singleSourceModelsPropertyList);
-//			sourceMappingList.add(multiSourceModelsPropertyList);
-//			PropertyMap model = null;
-//			Iterator<List<Property>> sourceMappingListIterator = sourceMappingList
-//					.iterator();
-//			while (sourceMappingListIterator.hasNext()) {
-//				List<Property> sourceList = sourceMappingListIterator.next();
-//				for (int i = 0; i < sourceList.size(); i++) {
-//					model = (PropertyMap) sourceList.get(i);
-//					String sourceName = ((PropertySimple) model
-//							.get("sourceName")).getStringValue(); //$NON-NLS-1$
-//					if (sourceName.equals("See below"))
-//						continue; // This is a multisource model which we will
-//									// handle separately
-//					String modelName = ((PropertySimple) model.get("name")) //$NON-NLS-1$
-//							.getStringValue();
-//					String dsName = ((PropertySimple) model.get("jndiName")) //$NON-NLS-1$
-//							.getStringValue();
-//
-//					ManagedObject managedModel = null;
-//					if (models != null && models.length != 0) {
-//						for (GenericValue genValue : models) {
-//							ManagedObject mo = (ManagedObject) ((GenericValueSupport) genValue)
-//									.getValue();
-//							String name = ProfileServiceUtil.getSimpleValue(mo,
-//									"name", String.class); //$NON-NLS-1$
-//							if (modelName.equals(name)) {
-//								managedModel = mo;
-//								break;
-//							}
-//						}
-//					}
-//
-//					ManagedProperty sourceMappings = null;
-//					if (managedModel != null) {
-//
-//						sourceMappings = managedModel
-//								.getProperty("sourceMappings");//$NON-NLS-1$
-//
-//						if (sourceMappings != null) {
-//							CollectionValueSupport mappings = (CollectionValueSupport) sourceMappings
-//									.getValue();
-//							GenericValue[] mappingsArray = (GenericValue[]) mappings
-//									.getElements();
-//							for (GenericValue sourceGenValue : mappingsArray) {
-//								ManagedObject sourceMo = (ManagedObject) ((GenericValueSupport) sourceGenValue)
-//										.getValue();
-//								String sName = ProfileServiceUtil
-//										.getSimpleValue(sourceMo,
-//												"name", String.class);//$NON-NLS-1$
-//								if (sName.equals(sourceName)) {
-//									// set the jndi name for the ds.
-//									ManagedProperty jndiProperty = sourceMo
-//											.getProperty("connectionJndiName"); //$NON-NLS-1$
-//									jndiProperty
-//											.setValue(ProfileServiceUtil.wrap(
-//													SimpleMetaType.STRING,
-//													dsName));
-//									break;
-//								}
-//							}
-//						}
-//					}
-//				}
-//			}
-//
-//			try {
-//				managementView.updateComponent(managedComponent);
-//				managementView.load();
-//			} catch (Exception e) {
-//				LOG.error("Unable to update component ["
-//						+ managedComponent.getName() + "] of type "
-//						+ componentType + ".", e);
-//				report.setStatus(ConfigurationUpdateStatus.FAILURE);
-//				report.setErrorMessageFromThrowable(e);
-//			}
-//		} catch (Exception e) {
-//			LOG.error("Unable to process update request", e);
-//			report.setStatus(ConfigurationUpdateStatus.FAILURE);
-//			report.setErrorMessageFromThrowable(e);
-//		}
+		report.setStatus(ConfigurationUpdateStatus.SUCCESS);
+		
+		List<Property> multiSourceModelsPropertyList = resourceConfiguration
+				.getList("multiSourceModels").getList();
+		List<Property> singleSourceModelsPropertyList = resourceConfiguration
+				.getList("singleSourceModels").getList();
+		ArrayList<List<Property>> sourceMappingList = new ArrayList<List<Property>>();
+		sourceMappingList.add(singleSourceModelsPropertyList);
+		sourceMappingList.add(multiSourceModelsPropertyList);
+		for (List<Property> sourceList:sourceMappingList) {
+			for (Property model:sourceList) {
+				String sourceName = ((PropertySimple) ((PropertyMap)model)
+						.get("sourceName")).getStringValue(); //$NON-NLS-1$
+				if (sourceName.equals("See below"))
+					continue; // This is a multisource model which we will handle separately
+				String modelName = ((PropertySimple) ((PropertyMap)model).get("name")) //$NON-NLS-1$
+						.getStringValue();
+				String translatorName = ((PropertySimple) ((PropertyMap)model).get("translatorName")) //$NON-NLS-1$
+						.getStringValue();
+				String dsName = ((PropertySimple) ((PropertyMap)model).get("jndiName")) //$NON-NLS-1$
+						.getStringValue();
+				
+				Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
+				additionalProperties.put(VDBComponent.VDBNAME, vdbName);
+				additionalProperties.put(VDBComponent.VERSION, vdbVersion);
+				additionalProperties.put(VDBComponent.MODELNAME, modelName);
+				additionalProperties.put(VDBComponent.SOURCE_NAME, sourceName);
+				additionalProperties.put(VDBComponent.TRANSLATOR_NAME, translatorName);
+				additionalProperties.put(VDBComponent.DS_NAME, dsName);
+				Result result = TeiidModuleView.executeOperation(getASConnection(), VDB.Operations.ASSIGN_DATASOURCE, DmrUtil.getTeiidAddress(), additionalProperties);
+				if (!result.isSuccess()){
+					report.setStatus(ConfigurationUpdateStatus.FAILURE);
+					report.setErrorMessage(result.getFailureDescription());
+				}
+			}
+		}
+		
 
 	}
 
@@ -483,7 +428,14 @@ public class VDBComponent extends Facet {
 			Object supportMultiSourceObject = null;
 			Boolean supportMultiSource = true;
 			try {
-				supportMultiSourceObject = modelMap.get("supports-multisource-bindings");
+				List<Map<String,Object>> propMap = (List<Map<String,Object>>)modelMap.get(PROPERTIES);
+				for (Map<String,Object> prop:propMap){
+					String propName = (String) prop.get(PROPERTY_NAME);
+					if (propName.equals("supports-multi-source-bindings")){
+						supportMultiSourceObject = prop.get(PROPERTY_VALUE);
+						break;
+					}
+				}
 			} catch (Exception e) {
 				LOG.error(e.getMessage());
 			}
@@ -491,15 +443,15 @@ public class VDBComponent extends Facet {
 			if (supportMultiSourceObject==null){
 				supportMultiSource = false; //if property is not there, we assume false
 			}else{
-				supportMultiSource = (Boolean)supportMultiSourceObject;
+				supportMultiSource = Boolean.valueOf((String)supportMultiSourceObject);
 			}
 
 			String modelName = (String) modelMap.get(MODELNAME);
-			Collection<Map<String, String>> sourceList = new ArrayList<Map<String, String>>();
+//			Collection<Map<String, String>> sourceList = new ArrayList<Map<String, String>>();
 
-			if (isSource){
-				getSourceMappingValue((ArrayList<Map<String,String>>)modelMap.get(SOURCE_MAPPINGS), sourceList);
-			}
+//			if (isSource){
+//				getSourceMappingValue((ArrayList<Map<String,String>>)modelMap.get(SOURCE_MAPPINGS), sourceList);
+//			}
 
 			Boolean visibility = (Boolean) modelMap.get(VISIBLE);
 			String type = (String) modelMap.get(MODELTYPE);
@@ -520,20 +472,21 @@ public class VDBComponent extends Facet {
 			}
 
 			if (isSource) {
-				for (Map<String, String> sourceMap : sourceList) {
+				List<Map<String,Object>> sourceList = (ArrayList<Map<String,Object>>)modelMap.get(SOURCE_MAPPINGS);
+				int sourceCount = 0;
+				for (Map<String, Object> sourceMap : sourceList) {
 	
-					
-					String sourceName = (String) sourceMap.get("name");
-					String jndiName = (String) sourceMap.get("jndiName");
+					sourceCount++;
+					String sourceName = (String) sourceMap.get(SOURCE_NAME);
+					String jndiName = (String) sourceMap.get(JNDI_NAME);
 					String translatorName = (String) sourceMap
-							.get("translatorName");
+							.get(TRANSLATOR_NAME);
 					PropertyMap multiSourceModel = null;
 
 					PropertyMap model = null;
 					if (supportMultiSource) {
-						// TODO need to loop through multisource models
 						multiSourceModel = new PropertyMap("map",
-								new PropertySimple("name", modelName),
+								new PropertySimple("name", sourceCount==1?modelName:""),
 								new PropertySimple("sourceName", sourceName),
 								new PropertySimple("jndiName", jndiName),
 								new PropertySimple("translatorName",
@@ -541,14 +494,16 @@ public class VDBComponent extends Facet {
 
 						multiSourceModelsList.add(multiSourceModel);
 
-						model = new PropertyMap("map", new PropertySimple(
-								"name", modelName), new PropertySimple(
-								"sourceName", "See below"), new PropertySimple(
-								"jndiName", "See below"), new PropertySimple(
-								"translatorName", "See below"),
-								new PropertySimple("visibility", visibility),
-								new PropertySimple("supportsMultiSource", true));
-						sourceModelsList.add(model);
+						if (sourceCount==1){
+							model = new PropertyMap("map", new PropertySimple(
+									"name", modelName), new PropertySimple(
+									"sourceName", "See below"), new PropertySimple(
+									"jndiName", "See below"), new PropertySimple(
+									"translatorName", "See below"),
+									new PropertySimple("visibility", visibility),
+									new PropertySimple("supportsMultiSource", true));
+							sourceModelsList.add(model);
+						}
 					} else {
 						model = new PropertyMap("map", new PropertySimple(
 								"name", modelName), new PropertySimple(
