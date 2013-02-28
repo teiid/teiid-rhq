@@ -125,6 +125,7 @@ public abstract class Facet extends BaseComponent<BaseComponent<?>> implements
 
 	private File deploymentFile;
 	private static final String BACKUP_FILE_EXTENSION = ".rej"; //$NON-NLS-1$
+	private Map<String, String> propertiesMap = new HashMap<String, String>();
 	
     String path;
     Address address;
@@ -316,6 +317,7 @@ public abstract class Facet extends BaseComponent<BaseComponent<?>> implements
 
         ConfigurationDefinition configDef = resourceContext.getResourceType().getResourceConfigurationDefinition();
         ConfigurationWriteDelegate delegate = new ConfigurationWriteDelegate(configDef, getASConnection(), getAddress());
+        delegate.setPropertiesMap(propertiesMap);
         delegate.updateResourceConfiguration(report);
     }
 
@@ -916,5 +918,13 @@ public abstract class Facet extends BaseComponent<BaseComponent<?>> implements
             return prop.getStringValue();
         }
     }
+
+	public Map<String, String> getPropertiesMap() {
+		return propertiesMap;
+	}
+
+	public void setPropertiesMap(Map<String, String> propertiesMap) {
+		this.propertiesMap = propertiesMap;
+	}
 
 }

@@ -114,6 +114,8 @@ public interface PluginConstants {
 				public final static String GET_SESSIONS = "getSessions"; //$NON-NLS-1$
 				public final static String GET_MATVIEWS = "getMaterializedViews"; //$NON-NLS-1$
 				public final static String RELOAD_MATVIEW = "reloadMaterializedView"; //$NON-NLS-1$
+				public final static String CHANGE_VDB_CONN_TYPE = "change-vdb-connection-type"; //$NON-NLS-1$
+				public final static String ASSIGN_DATASOURCE = "assign-datasource"; //$NON-NLS-1$
 
 			}
 			

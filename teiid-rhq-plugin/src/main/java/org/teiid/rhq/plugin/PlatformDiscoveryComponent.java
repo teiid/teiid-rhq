@@ -97,9 +97,8 @@ public class PlatformDiscoveryComponent implements
 					version, // Version
 					context.getResourceType().getDescription() + " : " + version, // subsystem.description
 					config, null);
-			Configuration configuration = detail.getPluginConfiguration();
-			configuration.put(new PropertySimple( "displayPreviewVDBS", Boolean.FALSE));
-			detail.setPluginConfiguration(configuration);
+			config.put(new PropertySimple( "displayPreviewVDBS", Boolean.FALSE));
+			detail.setPluginConfiguration(config);
 
 			// Add to return values
 			discoveredResources.add(detail);

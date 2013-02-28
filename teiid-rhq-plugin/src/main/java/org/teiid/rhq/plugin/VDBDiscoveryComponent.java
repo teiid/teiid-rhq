@@ -71,7 +71,7 @@ public class VDBDiscoveryComponent implements ResourceDiscoveryComponent {
 		for (LinkedHashMap<String, Object> map : list) {
 
 			boolean skipVdb = false;
-			if (!displayPreviewVdbs.getBooleanValue()){
+			if (displayPreviewVdbs.getBooleanValue()){
 				ArrayList<Map <String, Object>> properties = (ArrayList<Map <String, Object>>) map.get(VDBComponent.PROPERTIES);
 				if (properties != null) {
 					for (Map <String, Object> propertyMap : properties) {
