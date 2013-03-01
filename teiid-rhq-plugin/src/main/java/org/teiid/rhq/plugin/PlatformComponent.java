@@ -24,7 +24,6 @@ package org.teiid.rhq.plugin;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,7 +43,6 @@ import org.rhq.modules.plugins.jbossas7.BaseComponent;
 import org.rhq.modules.plugins.jbossas7.json.Address;
 import org.rhq.modules.plugins.jbossas7.json.ReadResource;
 import org.rhq.modules.plugins.jbossas7.json.Result;
-import org.rhq.modules.plugins.jbossas7.json.WriteAttribute;
 import org.teiid.rhq.admin.TeiidModuleView;
 import org.teiid.rhq.plugin.util.DmrUtil;
 import org.teiid.rhq.plugin.util.PluginConstants;
@@ -59,7 +57,7 @@ public class PlatformComponent extends Facet {
 	public static final String JDBC_TRANSPORT_CONFIGURATION = "JDBCTransportConfiguration";
 	public static final String DOT = ".";
 	private final Log LOG = LogFactory.getLog(PluginConstants.DEFAULT_LOGGER_CATEGORY);
-	static final String DISPLAY_PREVIEW_VDBS = "displayPreviewVDBS";
+	public static final String DISPLAY_PREVIEW_VDBS = "displayPreviewVDBS";
 
 	@Override
 	public void start(ResourceContext context) {
