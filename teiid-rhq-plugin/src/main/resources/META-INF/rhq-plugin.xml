@@ -573,8 +573,7 @@
 		</resource-configuration>
 
 		<service name="Virtual Database (VDB)s" description="Teiid Data Services Virtual Databases"
-			class="VDBComponent" discovery="VDBDiscoveryComponent">
-			<!-- createDeletePolicy="both" creationDataType="content"> -->
+			class="VDBComponent" discovery="VDBDiscoveryComponent"> 
 
 			<operation name="getSessions" displayName="View VDB Sessions"
 				description="Get current sessions currently connected to this VDB">
@@ -729,7 +728,7 @@
 				displayType="detail" category="throughput" property="sessionCount"
 				description="The number of user connections currently active." />
 
-			<content name="vdb" displayName="VDB File" category="deployable"
+		<!--	<content name="vdb" displayName="VDB File" category="deployable"
 				isCreationType="true">
 				<configuration>
 					<c:group name="deployment" displayName="Deployment Options">
@@ -738,7 +737,7 @@
 							description="The version to use for the deployed VDB. Leave blank to use the default version as determined by the deployer, overwrite a current version, or use the VDB file name version (i.e. vdbname.{version}.vdb). The version parameter is not applicable for deployment of dynamic VDBs." />
 					</c:group>
 				</configuration>
-			</content>
+			</content> -->
 
 			<resource-configuration>
 				<c:group name="general" displayName="General"

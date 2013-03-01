@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package org.teiid.rhq.plugin;
+package org.teiid.rhq.plugin.objects;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -46,11 +46,12 @@ import org.rhq.modules.plugins.jbossas7.ASConnection;
 import org.rhq.modules.plugins.jbossas7.json.Address;
 import org.rhq.modules.plugins.jbossas7.json.CompositeOperation;
 import org.rhq.modules.plugins.jbossas7.json.Operation;
-import org.rhq.modules.plugins.jbossas7.json.ReadChildrenResources;
 import org.rhq.modules.plugins.jbossas7.json.Remove;
 import org.rhq.modules.plugins.jbossas7.json.Result;
 import org.rhq.modules.plugins.jbossas7.json.WriteAttribute;
 import org.teiid.rhq.admin.TeiidModuleView;
+import org.teiid.rhq.plugin.PlatformComponent;
+import org.teiid.rhq.plugin.VDBComponent;
 import org.teiid.rhq.plugin.util.DmrUtil;
 import org.teiid.rhq.plugin.util.PluginConstants.ComponentType.VDB;
 
