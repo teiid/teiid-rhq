@@ -24,7 +24,6 @@ package org.teiid.rhq.plugin;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +44,6 @@ import org.rhq.core.domain.measurement.MeasurementReport;
 import org.rhq.core.domain.measurement.MeasurementScheduleRequest;
 import org.rhq.core.pluginapi.configuration.ConfigurationFacet;
 import org.rhq.core.pluginapi.configuration.ConfigurationUpdateReport;
-import org.rhq.core.pluginapi.inventory.CreateResourceReport;
 import org.rhq.core.pluginapi.inventory.ResourceContext;
 import org.rhq.modules.plugins.jbossas7.ASConnection;
 import org.rhq.modules.plugins.jbossas7.json.Address;
@@ -384,14 +382,6 @@ public class VDBComponent extends Facet {
 		return map;
 	}
 
-	@Override
-	public CreateResourceReport createResource(
-			CreateResourceReport createResourceReport) {
-
-		createContentBasedResource(createResourceReport);
-		return createResourceReport;
-	}
-
 	/**
 	 * @param mcVdb
 	 * @param configuration
@@ -486,7 +476,7 @@ public class VDBComponent extends Facet {
 					PropertyMap model = null;
 					if (supportMultiSource) {
 						multiSourceModel = new PropertyMap("map",
-								new PropertySimple("name", sourceCount==1?modelName:""),
+								new PropertySimple("name", modelName),
 								new PropertySimple("sourceName", sourceName),
 								new PropertySimple("jndiName", jndiName),
 								new PropertySimple("translatorName",
