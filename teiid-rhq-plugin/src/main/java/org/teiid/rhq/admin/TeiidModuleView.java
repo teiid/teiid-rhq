@@ -55,6 +55,9 @@ public class TeiidModuleView implements PluginConstants {
 	//Cache fields
 	private static final String QUERY_SERVICE_RESULT_SET_CACHE = "QUERY_SERVICE_RESULT_SET_CACHE";  //$NON-NLS-1$
 	private static final String PREPARED_PLAN_CACHE = "PREPARED_PLAN_CACHE";  //$NON-NLS-1$
+	
+	//Engine statistic
+	private static final String ENGINE_STATISTIC = "ENGINE_STATISTIC";  //$NON-NLS-1$
 
 	public TeiidModuleView() {
 	}
@@ -86,14 +89,8 @@ public class TeiidModuleView implements PluginConstants {
 			resultObject = new Double(getSessionCount(connection, null, null).doubleValue());
 		} else if (metric.equals(PluginConstants.ComponentType.Platform.Metrics.LONG_RUNNING_QUERIES)) {
 			resultObject = new Double(getLongRunningQueryCount(connection, null, null).doubleValue());
-//TODO: Do we need this?
-//		} else if (metric.equals(PluginConstants.ComponentType.Platform.Metrics.BUFFER_USAGE)) {
-//			try {
-//				resultObject = (getUsedBufferSpace(connection));
-//			} catch (Exception e) {
-//				final String msg = "Exception executing operation: " + Platform.Operations.GET_BUFFER_USAGE; //$NON-NLS-1$
-//				LOG.error(msg, e);
-//			}
+		} else if (metric.startsWith(ENGINE_STATISTIC + ".")) { //$NON-NLS-1$ 
+			return getEngineStatisticProperty(connection, metric);
 		} else if (metric.startsWith(PREPARED_PLAN_CACHE + ".") //$NON-NLS-1$
 				|| metric.startsWith(QUERY_SERVICE_RESULT_SET_CACHE+ ".")) { //$NON-NLS-1$
 			return getCacheProperty(connection, metric);
@@ -106,6 +103,13 @@ public class TeiidModuleView implements PluginConstants {
 		String cacheType = metric.substring(0, dotIndex);
 		String property = metric.substring(dotIndex + 1);
 		Map<String, Object> map = getCacheStats(connection, cacheType);
+		return map.get(property);
+	}
+	
+	private Object getEngineStatisticProperty(ASConnection connection,String metric) {
+		int dotIndex = metric.indexOf('.');
+		String property = metric.substring(dotIndex + 1);
+		Map<String, Object> map = getEngineStatistic(connection);
 		return map.get(property);
 	}
 
@@ -495,21 +499,12 @@ public class TeiidModuleView implements PluginConstants {
 		Result result = connection.execute(op);
 		return result;
 	}
+	
+	protected Map<String, Object> getEngineStatistic(ASConnection connection) {
 
-	//TODO: Is this needed in 8.x?
-//	protected Double getUsedBufferSpace(ASConnection connection) {
-//
-//		MetaValue usedBufferSpace = null;
-//
-//		try {
-//			usedBufferSpace = getManagedProperty(connection, getBufferService(
-//					connection, mc), Platform.Operations.GET_BUFFER_USAGE);
-//		} catch (Exception e) {
-//			final String msg = "Exception executing operation: " + Platform.Operations.GET_BUFFER_USAGE; //$NON-NLS-1$
-//			LOG.error(msg, e);
-//		}
-//
-//		return usedBufferSpace;
-//	}
+		Result result = executeOperation(connection, Platform.Operations.GET_ENGINE_STATISTICS, DmrUtil.getTeiidAddress(), null); 
+		
+		return (Map<String, Object>)result.getResult();
+	}
 	
 }
