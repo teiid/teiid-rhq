@@ -60,6 +60,7 @@ public interface PluginConstants {
 				public final static String CHANGE_VDB_CONNECTION_TYPE = "change-vdb-connection-type";
 				public final static String GET_QUERIES = "list-requests"; //$NON-NLS-1$					
 				public final static String GET_LONGRUNNINGQUERIES = "list-long-running-requests"; //$NON-NLS-1$
+				public final static String GET_ENGINE_STATISTICS = "engine-statistics"; //$NON-NLS-1$
 				public final static String EXECUTE_QUERY = "execute-query"; //$NON-NLS-1$
 				public final static String KILL_REQUEST = "cancel-request"; //$NON-NLS-1$
 				public final static String KILL_SESSION = "terminate-session"; //$NON-NLS-1$
