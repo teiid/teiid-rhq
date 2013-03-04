@@ -355,10 +355,6 @@
 					displayName="Long Running Query Threshold"
 					description="Length of time in seconds before a query is considered long running"
 					required="false" readOnly="false" />
-				<!-- Is this still needed? -->
-				<!-- <c:simple-property name="use-data-roles" displayName="Data Roles 
-					Enabled" description="Turn on role checking of resources based on the roles 
-					defined in VDB (default true)" required="false" readOnly="false" /> -->
 				<c:simple-property name="detect-change-events"
 					displayName="Detect Change Events"
 					description="Set to true for the engine to detect local change events. Should be disabled if using external change data capture tools. (default true)"
@@ -909,12 +905,12 @@
 						<c:simple-property name="allowCreateTempTables"
 							displayName="Allow Temp Table Creation" type="boolean"
 							description="Indicates if the role allows the creation of temporary tables"
-							readOnly="false" required="false" />
+							readOnly="true" required="false" />
 					</c:group>
 					<c:group name="dataPermissions" displayName="Data Permissions"
 						hiddenByDefault="false">
 						<c:list-property name="dataPermissionsList"
-							readOnly="false" required="false" displayName="Data Permissions"
+							readOnly="true" required="false" displayName="Data Permissions"
 							description="Data permissions for this data role">
 							<c:map-property name="map" readOnly="false">
 								<c:simple-property name="resourceName"
