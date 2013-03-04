@@ -437,12 +437,6 @@ public class VDBComponent extends Facet {
 			}
 
 			String modelName = (String) modelMap.get(MODELNAME);
-//			Collection<Map<String, String>> sourceList = new ArrayList<Map<String, String>>();
-
-//			if (isSource){
-//				getSourceMappingValue((ArrayList<Map<String,String>>)modelMap.get(SOURCE_MAPPINGS), sourceList);
-//			}
-
 			Boolean visibility = (Boolean) modelMap.get(VISIBLE);
 			String type = (String) modelMap.get(MODELTYPE);
 

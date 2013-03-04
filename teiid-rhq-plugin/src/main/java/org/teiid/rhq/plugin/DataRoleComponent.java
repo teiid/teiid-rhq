@@ -21,6 +21,7 @@
  */
 package org.teiid.rhq.plugin;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,6 +29,8 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.rhq.core.domain.configuration.Configuration;
+import org.rhq.core.domain.configuration.ConfigurationUpdateStatus;
+import org.rhq.core.domain.configuration.Property;
 import org.rhq.core.domain.configuration.PropertyList;
 import org.rhq.core.domain.configuration.PropertyMap;
 import org.rhq.core.domain.configuration.PropertySimple;
@@ -38,7 +41,12 @@ import org.rhq.core.pluginapi.configuration.ConfigurationFacet;
 import org.rhq.core.pluginapi.configuration.ConfigurationUpdateReport;
 import org.rhq.core.pluginapi.inventory.ResourceContext;
 import org.rhq.modules.plugins.jbossas7.ASConnection;
+import org.rhq.modules.plugins.jbossas7.json.Result;
+import org.teiid.rhq.admin.TeiidModuleView;
+import org.teiid.rhq.plugin.util.DmrUtil;
 import org.teiid.rhq.plugin.util.PluginConstants;
+import org.teiid.rhq.plugin.util.PluginConstants.ComponentType.DATA_ROLE;
+import org.teiid.rhq.plugin.util.PluginConstants.ComponentType.VDB;
 
 /**
  * Component class for a Teiid VDB Data Role
@@ -49,6 +57,7 @@ public class DataRoleComponent extends Facet {
 			.getLog(PluginConstants.DEFAULT_LOGGER_CATEGORY);
 	
 	
+	public static final String ROLE = "role-name";
 	public static final String POLICY_NAME = "policy-name";
 	public static final String POLICY_DESCRIPTION = "policy-description";
 	public static final String ALLOW_CREATE_TEMP_TABLES = "allow-create-temp-tables";
@@ -59,6 +68,10 @@ public class DataRoleComponent extends Facet {
 	public static final String ALLOW_UPDATE = "allow-update";
 	public static final String ALLOW_READ = "allow-read";
 	public static final String MAPPED_ROLE_NAMES = "mapped-role-names";
+	private static final String ANY_AUTHENTICATED_ROLE = "anyAuthenticated";
+	private String vdbName = null;
+	private String vdbVersion = null;
+	
 
 	/*
 	 * (non-Javadoc)
@@ -70,6 +83,10 @@ public class DataRoleComponent extends Facet {
 	public void start(ResourceContext context) {
 		this.resourceConfiguration = context.getPluginConfiguration();
 		this.componentType = PluginConstants.ComponentType.DATA_ROLE.NAME;
+		vdbName = ((VDBComponent)context.getParentResourceComponent()).getResourceConfiguration().getSimple("name")
+				.getStringValue();
+		vdbVersion = ((VDBComponent)context.getParentResourceComponent()).getResourceConfiguration().getSimple("version")
+		.getStringValue();
 		try {
 			super.start(context);
 			}catch (Exception e){
@@ -110,80 +127,71 @@ public class DataRoleComponent extends Facet {
 	 */
 	public void updateResourceConfiguration(ConfigurationUpdateReport report) {
 
-		//TODO: Support update in plugin for data roles?
+		Configuration resourceConfig = report.getConfiguration();
+		resourceConfiguration = resourceConfig.deepCopy();
+		report.setStatus(ConfigurationUpdateStatus.SUCCESS);
 		
-//		Configuration resourceConfig = report.getConfiguration();
-//		resourceConfiguration = resourceConfig.deepCopy();
-//
-//		// Get the vdb and update date role anyAuthenticated and MappedRoleNames
-//		ManagementView managementView = null;
-//		ComponentType componentType = new ComponentType(
-//				PluginConstants.ComponentType.VDB.TYPE,
-//				PluginConstants.ComponentType.VDB.SUBTYPE);
-//
-//		ManagedComponent managedComponent = null;
-//		ManagedProperty anyAuthenticatedMp = null;
-//		report.setStatus(ConfigurationUpdateStatus.SUCCESS);
-//		try {
-//
-//			managementView = getConnection().getManagementView();
-//			managedComponent = managementView.getComponent(
-//					((VDBComponent) this.resourceContext
-//							.getParentResourceComponent()).name, componentType);
-//			ManagedProperty mp = managedComponent.getProperty("dataPolicies");//$NON-NLS-1$
-//			CollectionValueSupport dataRolesListMp = (CollectionValueSupport) mp
-//					.getValue();
-//			String name = resourceConfiguration.getSimpleValue("name", null); //$NON-NLS-1$
-//			String anyAuthenticated = resourceConfiguration.getSimpleValue(
-//					"anyAuthenticated", null); //$NON-NLS-1$
-//
-//			for (MetaValue val : dataRolesListMp.getElements()) {
-//				GenericValueSupport genValueSupport = (GenericValueSupport) val;
-//				ManagedObjectImpl managedObject = (ManagedObjectImpl) genValueSupport
-//						.getValue();
-//
-//				for (String dataRolesProp : managedObject.getPropertyNames()) {
-//					ManagedProperty property = managedObject
-//							.getProperty(dataRolesProp);
-//
-//					String pname = ProfileServiceUtil.stringValue(managedObject
-//							.getProperty("name").getValue()); //$NON-NLS-1$
-//					if (!pname.equals(name)) {
-//						continue;
-//					}
-//
-//					anyAuthenticatedMp = managedObject
-//							.getProperty("anyAuthenticated"); //$NON-NLS-1$
-//					anyAuthenticatedMp.setValue(ProfileServiceUtil.wrap(
-//							SimpleMetaType.BOOLEAN, anyAuthenticated));
-//					List<Property> mappedRoleNamePropertyList = resourceConfiguration.getList("mappedRoleNameList").getList(); //$NON-NLS-1$
-//					List<String> mappedRoleNameList = new ArrayList<String>();
-//					
-//					for (Property mappedRoleNameProperty : mappedRoleNamePropertyList){
-//						String mappedRoleNameString = ((PropertyMap)mappedRoleNameProperty).getSimpleValue("name", null); //$NON-NLS-1$
-//						mappedRoleNameList.add(mappedRoleNameString);
-//					}
-//					ManagedProperty mappedRoleNameMp = managedObject.getProperty("mappedRoleNames"); //$NON-NLS-1$
-//					mappedRoleNameMp.setValue(convertListOfStringsToMetaValue(mappedRoleNameList));
-//				}
-//
-//				try {
-//					managementView.updateComponent(managedComponent);
-//					managementView.load();
-//				} catch (Exception e) {
-//					LOG.error("Unable to update component [" //$NON-NLS-1$
-//							+ managedComponent.getName() + "] of type " //$NON-NLS-1$
-//							+ componentType + ".", e); //$NON-NLS-1$
-//					report.setStatus(ConfigurationUpdateStatus.FAILURE);
-//					report.setErrorMessageFromThrowable(e);
-//				}
-//			}
-//		} catch (Exception e) {
-//			LOG.error("Unable to process update request", e); //$NON-NLS-1$
-//			report.setStatus(ConfigurationUpdateStatus.FAILURE);
-//			report.setErrorMessageFromThrowable(e);
-//		}
-
+		// Update date role anyAuthenticated 
+		PropertySimple anyAuthRoleProperty = resourceConfiguration.getSimple(ANY_AUTHENTICATED_ROLE);		
+		String roleName = resourceConfiguration.getSimple("name").getStringValue();
+		Boolean anyAuthenticated = anyAuthRoleProperty.getBooleanValue();
+		
+		Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
+		additionalProperties.put(VDBComponent.VDBNAME, vdbName);
+		additionalProperties.put(VDBComponent.VERSION, vdbVersion);
+		additionalProperties.put(DATA_ROLE.Operations.Parameters.DATA_ROLE, roleName);
+		String authenticatedRoleOperation = null;
+		if (anyAuthenticated){
+			authenticatedRoleOperation = DATA_ROLE.Operations.ADD_ANYAUTHENTICATED_ROLE;
+		}else{
+			authenticatedRoleOperation = DATA_ROLE.Operations.REMOVE_AUTHENTICATED_ROLE;
+		}
+		
+		Result result = TeiidModuleView.executeOperation(getASConnection(), authenticatedRoleOperation, DmrUtil.getTeiidAddress(), additionalProperties);
+		if (!result.isSuccess()){
+			report.setStatus(ConfigurationUpdateStatus.FAILURE);
+			report.setErrorMessage(result.getFailureDescription());
+			return;
+		}
+	
+		//Now update role names by removing existing and adding list values from configuration as new	
+		Map<String, Object> vdbMap = VDBComponent.getVdbMap(getASConnection(), vdbName,
+				vdbVersion);
+		
+		// Get data roles from VDB and find the current role
+		List<Map<String, Object>> dataPolicies = (List<Map<String, Object>>) vdbMap.get(VDBComponent.DATA_POLICIES);
+		for (Map<String, Object> policy : dataPolicies) {
+			String dataRoleName = (String) policy.get(DataRoleComponent.POLICY_NAME);
+			if (dataRoleName.equals(roleName)){
+				List<String> mappedRoleNames = (List<String>) policy.get(DataRoleComponent.MAPPED_ROLE_NAMES);
+				//First remove all mapped roles
+				if (mappedRoleNames != null) {
+					for (String mappedRoleName : mappedRoleNames) {
+						additionalProperties.put(DATA_ROLE.Operations.Parameters.MAPPED_ROLE_NAME, mappedRoleName);
+						result = TeiidModuleView.executeOperation(getASConnection(), DATA_ROLE.Operations.REMOVE_DATA_ROLE, DmrUtil.getTeiidAddress(), additionalProperties);
+						if (!result.isSuccess()){
+							report.setStatus(ConfigurationUpdateStatus.FAILURE);
+							report.setErrorMessage(result.getFailureDescription());
+							return;
+						}
+					}
+				}
+				//Now add any mapped roles from the config
+				List<Property> mappedRoleNamePropertyList = resourceConfiguration.getList("mappedRoleNameList").getList(); //$NON-NLS-1$
+				if (mappedRoleNamePropertyList != null) {
+					for (Property mappedRoleName : mappedRoleNamePropertyList) {
+						additionalProperties.put(DATA_ROLE.Operations.Parameters.MAPPED_ROLE_NAME, ((PropertySimple)mappedRoleName).getStringValue());
+						result = TeiidModuleView.executeOperation(getASConnection(), DATA_ROLE.Operations.ADD_DATA_ROLE, DmrUtil.getTeiidAddress(), additionalProperties);
+						if (!result.isSuccess()){
+							report.setStatus(ConfigurationUpdateStatus.FAILURE);
+							report.setErrorMessage(result.getFailureDescription());
+							return;
+						}
+					}
+				}
+			}
+		}
+	
 	}
 
 	@Override
@@ -238,7 +246,6 @@ public class DataRoleComponent extends Facet {
 				 for (String mappedRoleName : mappedRoleNames) {
 					 mappedRoleNameList.add(new PropertySimple("name", mappedRoleName));
 				 }
-			
 			 }
 		}
 

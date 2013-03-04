@@ -52,7 +52,6 @@ public interface PluginConstants {
 
 			public static interface Operations {
 
-				public final static String ADD_ANYAUTHENTICATED_ROLE = "add-anyauthenticated-role";
 				public final static String ADD_DATA_ROLE = "add-data-role";
 				public final static String ASSIGN_DATASOURCE = "assign-datasource";
 				public final static String GET_CACHE_TYPES = "cache-types";
@@ -77,7 +76,6 @@ public interface PluginConstants {
 				public final static String WRITE_ATTRIBUTE = "write-attribute";
 				public final static String LIST_VDBS = "list-vdbs";
 				public final static String GET_VDB = "get-vdb";
-				public final static String REMOVE_AUTHENTICATED_ROLE = "remove-anyauthenticated-role";
 				public final static String REMOVE_DATA_ROLE = "remove-data-role";
 				public final static String LIST_REQUESTS_PER_SESSION = "list-requests-per-session";
 				public final static String LIST_REQUESTS_PER_VDB = "list-requests-per-vdb";
@@ -117,7 +115,7 @@ public interface PluginConstants {
 				public final static String RELOAD_MATVIEW = "reloadMaterializedView"; //$NON-NLS-1$
 				public final static String CHANGE_VDB_CONN_TYPE = "change-vdb-connection-type"; //$NON-NLS-1$
 				public final static String ASSIGN_DATASOURCE = "assign-datasource"; //$NON-NLS-1$
-
+				
 			}
 			
 			public static interface Metrics {
@@ -138,6 +136,16 @@ public interface PluginConstants {
 			public final static String DESCRIPTION = "Data/Security Role for a Teiid Virtual Database (VDB)"; //$NON-NLS-1$
 
 			public static interface Operations {
+				
+				public final static String REMOVE_AUTHENTICATED_ROLE = "remove-anyauthenticated-role";
+				public final static String ADD_ANYAUTHENTICATED_ROLE = "add-anyauthenticated-role";
+				public final static String REMOVE_DATA_ROLE = "remove-data-role";
+				public final static String ADD_DATA_ROLE = "add-data-role";
+				
+				public static interface Parameters {
+					public static final String MAPPED_ROLE_NAME = "mapped-role";
+					public static final String DATA_ROLE = "data-role";
+				}
 			}
 			
 			public static interface Metrics {
