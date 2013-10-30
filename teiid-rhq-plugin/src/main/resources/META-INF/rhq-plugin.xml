@@ -72,7 +72,7 @@
 
 	<depends plugin="JBossAS7" useClasses="true" />
 
-	<server name="Data Services" description="Teiid Data Services"
+	<server name="Data Virtualization" description="Teiid Data Virtualization"
 		class="PlatformComponent" discovery="PlatformDiscoveryComponent"
 		singleton="true">
 
@@ -308,8 +308,7 @@
 
 		<resource-configuration>
 			<c:group name="SessionSettings"
-				displayName="Settings for the Data 
-				Services plugin. Will be reset with a server restart."
+				displayName="Settings for the Data Virtualilzation plugin. Will be reset with a server restart."
 				hiddenByDefault="false">
 				<c:simple-property name="displayPreviewVDBS"
 					displayName="Display Preview VDBs"
@@ -596,7 +595,7 @@
 			</c:group>
 		</resource-configuration>
 
-		<service name="Virtual Database (VDB)s" description="Teiid Data Services Virtual Databases"
+		<service name="Virtual Database (VDB)s" description="Teiid Data Virtualization Virtual Databases"
 			class="VDBComponent" discovery="VDBDiscoveryComponent"> 
 
 			<operation name="getSessions" displayName="View VDB Sessions"
