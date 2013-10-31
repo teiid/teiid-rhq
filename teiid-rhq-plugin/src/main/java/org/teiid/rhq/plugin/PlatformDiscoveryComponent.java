@@ -93,7 +93,7 @@ public class PlatformDiscoveryComponent implements
 			DiscoveredResourceDetails detail = new DiscoveredResourceDetails(
 					context.getResourceType(), // DataType
 					"teiid", // Key
-					"data services", // Name
+					"data virtualization", // Name
 					version, // Version
 					context.getResourceType().getDescription() + " : " + version, // subsystem.description
 					config, null);

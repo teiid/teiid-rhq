@@ -6,7 +6,7 @@
 		<artifactId>teiid-rhq-parent</artifactId>
 		<groupId>org.jboss.teiid.rhq</groupId>
 		<version>1.0.0.Final</version>
-		<relativePath>teiid-rhq-parent/pom.xml</relativePath>
+		<relativePath>./teiid-rhq-parent/pom.xml</relativePath>
 	</parent>
 
 	<groupId>org.jboss.teiid.rhq</groupId>
