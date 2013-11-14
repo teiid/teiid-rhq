@@ -3,9 +3,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.jboss</groupId>
-		<artifactId>jboss-parent</artifactId>
-		<version>10</version>
+        <groupId>org.jboss.teiid</groupId>
+        <artifactId>teiid-parent</artifactId>
+        <version>8.4.1</version>    
 	</parent>
 
 	<groupId>org.jboss.teiid.rhq</groupId>
@@ -39,7 +39,7 @@
 
 	<issueManagement>
 		<system>jira</system>
-		<url>http://issues.jboss.org/browse/TEIID</url>
+		<url>http://issues.jboss.org/browse/TEIIDRHQ</url>
 	</issueManagement>
 
 	<developers>
@@ -87,13 +87,10 @@
 	</developers>
 
 	<properties>
-        <version.org.jboss.integration-platform>6.0.0-SNAPSHOT</version.org.jboss.integration-platform>
-        <jbossas-version>7.2.0.Alpha1-redhat-4</jbossas-version>
 
-		<jopr.jboss.as7.plugin.version>4.4.0</jopr.jboss.as7.plugin.version>
-		<org.rhq.version>4.4.0</org.rhq.version>
+		<!--jopr.jboss.as7.plugin.version>4.4.0</jopr.jboss.as7.plugin.version-->
 		<teiid.version>8.4.0.Final</teiid.version>
-		<commons.logging.version>1.1</commons.logging.version>
+		<!--commons.logging.version>1.1</commons.logging.version-->
 		<jboss-embeddable-ejb3.version>1.0.0.Alpha9</jboss-embeddable-ejb3.version>
 
 	</properties>
@@ -108,29 +105,13 @@
 
 	<dependencyManagement>
 		<dependencies>
-        <!-- Core BOM imports -->
-           <dependency>
-            <groupId>org.jboss.integration-platform</groupId>
-            <artifactId>jboss-integration-platform-bom</artifactId>
-            <version>${version.org.jboss.integration-platform}</version>
-            <scope>import</scope>
-            <type>pom</type>
-          </dependency>   
-          <dependency>
-             <groupId>org.jboss.as</groupId>
-             <artifactId>jboss-as-parent</artifactId>
-             <version>${jbossas-version}</version>
-             <type>pom</type>
-             <scope>import</scope>
-          </dependency> 
-                                           
-        
+
 			<!-- Below are the core modules that are required dependencies of all 
 				plugins -->
 			<dependency>
 				<groupId>org.rhq</groupId>
 				<artifactId>rhq-core-domain</artifactId>
-				<version>${org.rhq.version}</version>
+				<version>${version.org.rhq}</version>
 				<scope>provided</scope>
 				<!-- provided by the agent/plugin-container -->
 			</dependency>
@@ -139,33 +120,33 @@
 			<dependency>
 				<groupId>org.rhq</groupId>
 				<artifactId>rhq-core-plugin-api</artifactId>
-				<version>${org.rhq.version}</version>
+				<version>${version.org.rhq}</version>
 				<scope>provided</scope> <!-- provided by the agent/plugin-container -->
 			</dependency>
 
 			<dependency>
 				<groupId>org.rhq</groupId>
 				<artifactId>rhq-core-native-system</artifactId>
-				<version>${org.rhq.version}</version>
+				<version>${version.org.rhq}</version>
 				<scope>provided</scope> <!-- provided by the agent/plugin-container -->
 			</dependency>
 
 			<dependency>
 				<groupId>org.rhq</groupId>
 				<artifactId>rhq-jmx-plugin</artifactId>
-				<version>${org.rhq.version}</version>
+				<version>${version.org.rhq}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.rhq</groupId>
 				<artifactId>rhq-core-util</artifactId>
-				<version>${org.rhq.version}</version>
+				<version>${version.org.rhq}</version>
 			</dependency>
 
 			<dependency>
 				<groupId>mc4j</groupId>
 				<artifactId>org-mc4j-ems</artifactId>
-				<version>1.2.6</version>
+				<version>${version.mc4j}</version>
 			</dependency>
 
 			<!-- TODO: This is a fix for the Javac bug requiring annotations to be 
@@ -182,14 +163,14 @@
 			<dependency>
 				<groupId>commons-logging</groupId>
 				<artifactId>commons-logging</artifactId>
-				<version>${commons.logging.version}</version>
+				<version>${version.commons-logging}</version>
 				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
 				<groupId>org.rhq</groupId>
 				<artifactId>rhq-jboss-as-7-plugin</artifactId>
-				<version>${jopr.jboss.as7.plugin.version}</version>
+				<version>${version.org.rhq}</version>
 			</dependency>
 
 			<dependency>
