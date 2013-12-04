@@ -73,7 +73,7 @@ public class VDBComponent extends Facet {
 	public static final String PROPERTIES = "properties"; //$NON-NLS-1$
 	public static final String PROPERTY_NAME = "property-name"; //$NON-NLS-1$
 	public static final String PROPERTY_VALUE = "property-value"; //$NON-NLS-1$
-	public static final String DYNAMIC = "dynamic"; //$NON-NLS-1$
+	public static final String DYNAMIC = "xml-deployment"; //$NON-NLS-1$
 	public static final String DATA_POLICIES = "data-policies"; //$NON-NLS-1$
 	public static final String DESCRIPTION = "vdb-description"; //$NON-NLS-1$
 	public static final String ENTRIES = "entries"; //$NON-NLS-1$
