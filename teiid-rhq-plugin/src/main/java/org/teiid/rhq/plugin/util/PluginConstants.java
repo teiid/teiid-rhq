@@ -109,7 +109,7 @@ public interface PluginConstants {
 				public final static String KILL_REQUEST = "cancelRequest"; //$NON-NLS-1$
 				public final static String KILL_SESSION = "terminateSession"; //$NON-NLS-1$
 				public final static String GET_PROPERTIES = "getProperties"; //$NON-NLS-1$
-				public final static String GET_REQUESTS = "getRequestsUsingVDB"; //$NON-NLS-1$
+				public final static String GET_REQUESTS = "list-requests-per-vdb"; //$NON-NLS-1$
 				public final static String GET_SESSIONS = "getSessions"; //$NON-NLS-1$
 				public final static String GET_MATVIEWS = "getMaterializedViews"; //$NON-NLS-1$
 				public final static String RELOAD_MATVIEW = "reloadMaterializedView"; //$NON-NLS-1$
@@ -234,7 +234,7 @@ public interface PluginConstants {
 	 * @since 1.0
 	 */
 	public static interface Operation {
-		public final static String KILL_REQUEST = "killRequest"; //$NON-NLS-1$
+		public final static String KILL_REQUEST = "cancel-request"; //$NON-NLS-1$
 		public final static String GET_VDBS = "listVDBs"; //$NON-NLS-1$
 		public final static String GET_PROPERTIES = "getProperties"; //$NON-NLS-1$
 		public final static String GET_REQUESTS = "getRequests"; //$NON-NLS-1$
@@ -261,9 +261,9 @@ public interface PluginConstants {
 
 			public final static String FIELD_LIST = "fieldList"; //$NON-NLS-1$
 			public final static String TRANSACTION_ID = "transactionID"; //$NON-NLS-1$
-			public final static String REQUEST_ID = "requestID"; //$NON-NLS-1$
-			public final static String SESSION_ID = "sessionID"; //$NON-NLS-1$
-			public final static String VDB_URL = "vdbUrl"; //$NON-NLS-1$
+			public final static String REQUEST_ID = "execution-id"; //$NON-NLS-1$
+			public final static String SESSION_ID = "session-id"; //$NON-NLS-1$
+			public final static String VDB_URL = "vdbUrl"; //$NON-NLS-1$ 
 			public final static String VDB_DEPLOY_NAME = "vdbDeployName"; //$NON-NLS-1$
 			public final static String NAME = "Name"; //$NON-NLS-1$
 			public final static String VALUE = "Value"; //$NON-NLS-1$

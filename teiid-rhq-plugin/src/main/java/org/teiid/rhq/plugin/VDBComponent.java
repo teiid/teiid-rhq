@@ -217,8 +217,8 @@ public class VDBComponent extends Facet {
 							.getName()
 							.equals(
 									PluginConstants.ComponentType.VDB.Metrics.QUERY_COUNT)) {
-						report.addData(new MeasurementDataTrait(request,
-								(String) metricReturnObject));
+						report.addData(new MeasurementDataNumeric(request,
+								(Double) metricReturnObject));
 					} else {
 						if (request
 								.getName()
