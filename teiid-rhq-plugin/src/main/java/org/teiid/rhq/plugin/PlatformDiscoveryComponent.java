@@ -36,6 +36,7 @@ import org.rhq.core.pluginapi.inventory.ResourceDiscoveryContext;
 import org.rhq.modules.plugins.jbossas7.ASConnection;
 import org.rhq.modules.plugins.jbossas7.BaseComponent;
 import org.rhq.modules.plugins.jbossas7.json.Address;
+import org.rhq.modules.plugins.jbossas7.json.ReadAttribute;
 import org.rhq.modules.plugins.jbossas7.json.ReadChildrenNames;
 import org.rhq.modules.plugins.jbossas7.json.ReadResource;
 import org.rhq.modules.plugins.jbossas7.json.Result;
@@ -84,7 +85,7 @@ public class PlatformDiscoveryComponent implements
 		
 		if (result.isSuccess()) {
 			
-			Result versionResult = connection.execute(new ReadChildrenNames(addr, "runtime-version"));
+			Result versionResult = connection.execute(new ReadAttribute(addr, "runtime-version"));
 			String version = null;
 			if (versionResult.isSuccess())	{
 				version = versionResult.getResult().toString();
@@ -95,7 +96,7 @@ public class PlatformDiscoveryComponent implements
 					"teiid", // Key
 					"data virtualization", // Name
 					version, // Version
-					context.getResourceType().getDescription() + " : " + version, // subsystem.description
+					context.getResourceType().getDescription(), // subsystem.description
 					config, null);
 			config.put(new PropertySimple( "displayPreviewVDBS", Boolean.FALSE));
 			detail.setPluginConfiguration(config);
