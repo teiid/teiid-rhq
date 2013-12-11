@@ -21,7 +21,6 @@
  */
 package org.teiid.rhq.admin;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
