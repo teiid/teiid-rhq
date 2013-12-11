@@ -32,10 +32,10 @@ public interface PluginConstants {
 	 * Log4j log category to use
 	 */
 	public final static String DEFAULT_LOGGER_CATEGORY = "org.rhq"; //$NON-NLS-1$
-	
-	
+
 	/**
-	 * These are properties required for executing operations in the Teiid module
+	 * These are properties required for executing operations in the Teiid
+	 * module
 	 */
 	public interface ComponentType {
 
@@ -82,14 +82,14 @@ public interface PluginConstants {
 				public final static String LIST_SESSIONS = "list-sessions";
 				public final static String LIST_TRANSACTIONS = "list-transactions";
 				public final static String lIST_TRANSLATORS = "list-translators";
-				
+
 			}
 
 			public static interface Metrics {
 				public final static String QUERY_COUNT = "queryCount"; //$NON-NLS-1$            
 				public final static String SESSION_COUNT = "sessionCount"; //$NON-NLS-1$
 				public final static String LONG_RUNNING_QUERIES = "longRunningQueries"; //$NON-NLS-1$     
-				//TODO Do we still need this?
+				// TODO Do we still need this?
 				public final static String BUFFER_USAGE = "userBufferSpace"; //$NON-NLS-1$
 			}
 		}
@@ -115,9 +115,9 @@ public interface PluginConstants {
 				public final static String RELOAD_MATVIEW = "reloadMaterializedView"; //$NON-NLS-1$
 				public final static String CHANGE_VDB_CONN_TYPE = "change-vdb-connection-type"; //$NON-NLS-1$
 				public final static String ASSIGN_DATASOURCE = "assign-datasource"; //$NON-NLS-1$
-				
+
 			}
-			
+
 			public static interface Metrics {
 
 				public final static String STATUS = "status"; //$NON-NLS-1$ 
@@ -129,25 +129,41 @@ public interface PluginConstants {
 			}
 
 		}
+
+		public interface ASSystem {
 		
+			public static interface Operations {
+
+				public final static String DEPLOYMENT = "deployment"; //$NON-NLS-1$
+				public final static String ADD = "add"; //$NON-NLS-1$
+			}
+			
+			public static interface Parameters {
+				public static final String VDB_URL = "url"; //$NON-NLS-1$
+				public static final String VDB_NAME = "vdb-name"; //$NON-NLS-1$
+				public final static String CONTENT = "content"; //$NON-NLS-1$
+				public final static String ENABLED = "enabled"; //$NON-NLS-1$
+			}
+		}
+
 		public interface DATA_ROLE {
 
 			public final static String NAME = "VDB Data Role"; //$NON-NLS-1$
 			public final static String DESCRIPTION = "Data/Security Role for a Teiid Virtual Database (VDB)"; //$NON-NLS-1$
 
 			public static interface Operations {
-				
+
 				public final static String REMOVE_AUTHENTICATED_ROLE = "remove-anyauthenticated-role";
 				public final static String ADD_ANYAUTHENTICATED_ROLE = "add-anyauthenticated-role";
 				public final static String REMOVE_DATA_ROLE = "remove-data-role";
 				public final static String ADD_DATA_ROLE = "add-data-role";
-				
+
 				public static interface Parameters {
 					public static final String MAPPED_ROLE_NAME = "mapped-role";
 					public static final String DATA_ROLE = "data-role";
 				}
 			}
-			
+
 			public static interface Metrics {
 			}
 
@@ -162,12 +178,13 @@ public interface PluginConstants {
 			public static interface Operations {
 
 			}
-			
+
 			public static interface Metrics {
 
 			}
 
 		}
+
 		public interface Model {
 
 			public final static String TYPE = "teiid"; //$NON-NLS-1$
@@ -250,9 +267,10 @@ public interface PluginConstants {
 		public static interface Value {
 			public final static String STOP_NOW = "stopNow"; //$NON-NLS-1$  
 			public final static String MAT_VIEW_QUERY = "select SchemaName, Name, TargetSchemaName, TargetName, " + //$NON-NLS-1$ 
-														"Valid, LoadState, Updated, Cardinality from SYSADMIN.MATVIEWS " +  //$NON-NLS-1$  
-														"where SchemaName != 'pg_catalog'"; //$NON-NLS-1$  
-			public final static String MAT_VIEW_REFRESH = "exec SYSADMIN.refreshMatView('param1','param2');";  //$NON-NLS-1$
+					"Valid, LoadState, Updated, Cardinality from SYSADMIN.MATVIEWS "
+					+ //$NON-NLS-1$  
+					"where SchemaName != 'pg_catalog'"; //$NON-NLS-1$  
+			public final static String MAT_VIEW_REFRESH = "exec SYSADMIN.refreshMatView('param1','param2');"; //$NON-NLS-1$
 			public final static String WAIT_UNTIL_FINISHED = "waitUntilFinished"; //$NON-NLS-1$
 
 			public final static String INCLUDE_SOURCE_QUERIES = "includeSourceQueries"; //$NON-NLS-1$

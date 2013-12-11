@@ -21,6 +21,7 @@
  */
 package org.teiid.rhq.admin;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,27 +38,29 @@ import org.teiid.rhq.plugin.VDBComponent;
 import org.teiid.rhq.plugin.objects.ExecutedResult;
 import org.teiid.rhq.plugin.util.DmrUtil;
 import org.teiid.rhq.plugin.util.PluginConstants;
+import org.teiid.rhq.plugin.util.PluginConstants.ComponentType.ASSystem;
 import org.teiid.rhq.plugin.util.PluginConstants.ComponentType.Platform;
 import org.teiid.rhq.plugin.util.PluginConstants.ComponentType.Platform.Operations;
 import org.teiid.rhq.plugin.util.PluginConstants.ComponentType.VDB;
 
 /**
  * This class gathers metrics and executes operations
- *
+ * 
  */
 public class TeiidModuleView implements PluginConstants {
 
-	private static final Log LOG = LogFactory.getLog(PluginConstants.DEFAULT_LOGGER_CATEGORY);
+	private static final Log LOG = LogFactory
+			.getLog(PluginConstants.DEFAULT_LOGGER_CATEGORY);
 
 	public static final String VDB_EXT = ".vdb"; //$NON-NLS-1$
 	public static final String DYNAMIC_VDB_EXT = "-vdb.xml"; //$NON-NLS-1$
-		
-	//Cache fields
-	private static final String QUERY_SERVICE_RESULT_SET_CACHE = "QUERY_SERVICE_RESULT_SET_CACHE";  //$NON-NLS-1$
-	private static final String PREPARED_PLAN_CACHE = "PREPARED_PLAN_CACHE";  //$NON-NLS-1$
-	
-	//Engine statistic
-	private static final String ENGINE_STATISTIC = "ENGINE_STATISTIC";  //$NON-NLS-1$
+
+	// Cache fields
+	private static final String QUERY_SERVICE_RESULT_SET_CACHE = "QUERY_SERVICE_RESULT_SET_CACHE"; //$NON-NLS-1$
+	private static final String PREPARED_PLAN_CACHE = "PREPARED_PLAN_CACHE"; //$NON-NLS-1$
+
+	// Engine statistic
+	private static final String ENGINE_STATISTIC = "ENGINE_STATISTIC"; //$NON-NLS-1$
 
 	public TeiidModuleView() {
 	}
@@ -65,72 +68,90 @@ public class TeiidModuleView implements PluginConstants {
 	/*
 	 * Metric methods
 	 */
-	public Object getMetric(ASConnection connection,
-			String componentType, String identifier, String metric,
-			Map<String, Object> valueMap) throws Exception {
+	public Object getMetric(ASConnection connection, String componentType,
+			String identifier, String metric, Map<String, Object> valueMap)
+			throws Exception {
 		Object resultObject = new Object();
 
 		if (componentType.equals(PluginConstants.ComponentType.Platform.NAME)) {
-			resultObject = getPlatformMetric(connection, componentType, metric,	valueMap);
+			resultObject = getPlatformMetric(connection, componentType, metric,
+					valueMap);
 		} else if (componentType.equals(PluginConstants.ComponentType.VDB.NAME)) {
-			resultObject = getVdbMetric(connection, componentType, identifier,metric, valueMap);
+			resultObject = getVdbMetric(connection, componentType, identifier,
+					metric, valueMap);
 		}
 		return resultObject;
 	}
 
 	private Object getPlatformMetric(ASConnection connection,
-			String componentType, String metric, Map<String, Object> valueMap) throws Exception {
+			String componentType, String metric, Map<String, Object> valueMap)
+			throws Exception {
 
 		Object resultObject = new Object();
 
-		if (metric.equals(PluginConstants.ComponentType.Platform.Metrics.QUERY_COUNT)) {
-			resultObject = new Double(getQueryCount(connection, null, null).doubleValue());
-		} else if (metric.equals(PluginConstants.ComponentType.Platform.Metrics.SESSION_COUNT)) {
-			resultObject = new Double(getSessionCount(connection, null, null).doubleValue());
-		} else if (metric.equals(PluginConstants.ComponentType.Platform.Metrics.LONG_RUNNING_QUERIES)) {
-			resultObject = new Double(getLongRunningQueryCount(connection, null, null).doubleValue());
+		if (metric
+				.equals(PluginConstants.ComponentType.Platform.Metrics.QUERY_COUNT)) {
+			resultObject = new Double(getQueryCount(connection, null, null)
+					.doubleValue());
+		} else if (metric
+				.equals(PluginConstants.ComponentType.Platform.Metrics.SESSION_COUNT)) {
+			resultObject = new Double(getSessionCount(connection, null, null)
+					.doubleValue());
+		} else if (metric
+				.equals(PluginConstants.ComponentType.Platform.Metrics.LONG_RUNNING_QUERIES)) {
+			resultObject = new Double(getLongRunningQueryCount(connection,
+					null, null).doubleValue());
 		} else if (metric.startsWith(ENGINE_STATISTIC + ".")) { //$NON-NLS-1$ 
 			return getEngineStatisticProperty(connection, metric);
 		} else if (metric.startsWith(PREPARED_PLAN_CACHE + ".") //$NON-NLS-1$
-				|| metric.startsWith(QUERY_SERVICE_RESULT_SET_CACHE+ ".")) { //$NON-NLS-1$
+				|| metric.startsWith(QUERY_SERVICE_RESULT_SET_CACHE + ".")) { //$NON-NLS-1$
 			return getCacheProperty(connection, metric);
 		}
 		return resultObject;
 	}
 
-	private Object getCacheProperty(ASConnection connection,String metric) {
+	private Object getCacheProperty(ASConnection connection, String metric) {
 		int dotIndex = metric.indexOf('.');
 		String cacheType = metric.substring(0, dotIndex);
 		String property = metric.substring(dotIndex + 1);
 		Map<String, Object> map = getCacheStats(connection, cacheType);
 		return map.get(property);
 	}
-	
-	private Object getEngineStatisticProperty(ASConnection connection,String metric) {
+
+	private Object getEngineStatisticProperty(ASConnection connection,
+			String metric) {
 		int dotIndex = metric.indexOf('.');
 		String property = metric.substring(dotIndex + 1);
 		Map<String, Object> map = getEngineStatistic(connection);
 		return map.get(property);
 	}
 
-	private Object getVdbMetric(ASConnection connection,
-			String componentType, String identifier, String metric,
-			Map<String, Object> valueMap) throws Exception {
+	private Object getVdbMetric(ASConnection connection, String componentType,
+			String identifier, String metric, Map<String, Object> valueMap)
+			throws Exception {
 
 		Object resultObject = new Object();
 		String vdbName = (String) valueMap.get(VDB.NAME);
 		String vdbVersion = (String) valueMap.get(VDB.VERSION);
 
-		if (metric.equals(PluginConstants.ComponentType.VDB.Metrics.ERROR_COUNT)) {
+		if (metric
+				.equals(PluginConstants.ComponentType.VDB.Metrics.ERROR_COUNT)) {
 			resultObject = getErrorCount(connection, vdbName, vdbVersion);
-		} else if (metric.equals(PluginConstants.ComponentType.VDB.Metrics.STATUS)) {
+		} else if (metric
+				.equals(PluginConstants.ComponentType.VDB.Metrics.STATUS)) {
 			resultObject = getVDBStatus(connection, vdbName, vdbVersion);
-		} else if (metric.equals(PluginConstants.ComponentType.VDB.Metrics.QUERY_COUNT)) {
-			resultObject = new Double(getQueryCount(connection, vdbName, vdbVersion).doubleValue());
-		} else if (metric.equals(PluginConstants.ComponentType.VDB.Metrics.SESSION_COUNT)) {
-			resultObject = new Double(getSessionCount(connection, vdbName, vdbVersion).doubleValue());
-		} else if (metric.equals(PluginConstants.ComponentType.VDB.Metrics.LONG_RUNNING_QUERIES)) {
-			resultObject = new Double(getLongRunningQueryCount(connection, vdbName, vdbVersion).doubleValue());
+		} else if (metric
+				.equals(PluginConstants.ComponentType.VDB.Metrics.QUERY_COUNT)) {
+			resultObject = new Double(getQueryCount(connection, vdbName,
+					vdbVersion).doubleValue());
+		} else if (metric
+				.equals(PluginConstants.ComponentType.VDB.Metrics.SESSION_COUNT)) {
+			resultObject = new Double(getSessionCount(connection, vdbName,
+					vdbVersion).doubleValue());
+		} else if (metric
+				.equals(PluginConstants.ComponentType.VDB.Metrics.LONG_RUNNING_QUERIES)) {
+			resultObject = new Double(getLongRunningQueryCount(connection,
+					vdbName, vdbVersion).doubleValue());
 		}
 		return resultObject;
 	}
@@ -140,12 +161,17 @@ public class TeiidModuleView implements PluginConstants {
 	 */
 
 	public void executeOperation(ASConnection connection,
-			ExecutedResult operationResult, final Map<String, Object> valueMap) throws Exception {
+			ExecutedResult operationResult, final Map<String, Object> valueMap)
+			throws Exception {
 
-		if (operationResult.getComponentType().equals(PluginConstants.ComponentType.Platform.NAME)) {
-		    executePlatformOperation(connection, operationResult,	operationResult.getOperationName(), valueMap);
-		} else if (operationResult.getComponentType().equals(	PluginConstants.ComponentType.VDB.NAME)) {
-			executeVdbOperation(connection, operationResult, operationResult	.getOperationName(), valueMap);
+		if (operationResult.getComponentType().equals(
+				PluginConstants.ComponentType.Platform.NAME)) {
+			executePlatformOperation(connection, operationResult,
+					operationResult.getOperationName(), valueMap);
+		} else if (operationResult.getComponentType().equals(
+				PluginConstants.ComponentType.VDB.NAME)) {
+			executeVdbOperation(connection, operationResult,
+					operationResult.getOperationName(), valueMap);
 		}
 	}
 
@@ -153,8 +179,9 @@ public class TeiidModuleView implements PluginConstants {
 			ExecutedResult operationResult, final String operationName,
 			final Map<String, Object> valueMap) throws Exception {
 		List<Map<String, Object>> resultObject = null;
+		Result result = null;
 		Address address = DmrUtil.getTeiidAddress();
-		
+
 		if (operationName.equals(Platform.Operations.GET_LONGRUNNINGQUERIES)) {
 			resultObject = getLongRunningQueries(connection);
 			operationResult.setContent(resultObject);
@@ -168,47 +195,48 @@ public class TeiidModuleView implements PluginConstants {
 			resultObject = getTransactions(connection);
 			operationResult.setContent(resultObject);
 		} else if (operationName.equals(Platform.Operations.KILL_TRANSACTION)) {
-			String transactionID = (String) valueMap.get(Operation.Value.TRANSACTION_ID);
+			String transactionID = (String) valueMap
+					.get(Operation.Value.TRANSACTION_ID);
 			Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
-			additionalProperties.put(Operation.Value.TRANSACTIONID, transactionID);
-			operationResult.setContent((Collection<?>)executeOperation(connection, operationName, address, additionalProperties));
+			additionalProperties.put(Operation.Value.TRANSACTIONID,
+					transactionID);
+			operationResult.setContent((Collection<?>) executeOperation(
+					connection, operationName, address, additionalProperties));
 		} else if (operationName.equals(Platform.Operations.KILL_SESSION)) {
-			String sessionID = (String) valueMap.get(Operation.Value.SESSION_ID);
+			String sessionID = (String) valueMap
+					.get(Operation.Value.SESSION_ID);
 			Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
 			additionalProperties.put(Operation.Value.SESSION, sessionID);
-			operationResult.setContent((Collection<?>)executeOperation(connection, operationName, address, additionalProperties));
+			operationResult.setContent((Collection<?>) executeOperation(
+					connection, operationName, address, additionalProperties));
 		} else if (operationName.equals(Platform.Operations.KILL_REQUEST)) {
 			Long requestID = (Long) valueMap.get(Operation.Value.REQUEST_ID);
-			String sessionID = (String) valueMap.get(Operation.Value.SESSION_ID);
+			String sessionID = (String) valueMap
+					.get(Operation.Value.SESSION_ID);
 			Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
 			additionalProperties.put(Operation.Value.REQUEST_ID, requestID);
 			additionalProperties.put(Operation.Value.SESSION, sessionID);
-			operationResult.setContent((Collection<?>)executeOperation(connection, operationName, address, additionalProperties));
-		//TODO: Implement DEPLOY_VDB_BY_URL
-//		} //else if (operationName.equals(Platform.Operations.DEPLOY_VDB_BY_URL)) {
-//			String vdbUrl = (String) valueMap.get(Operation.Value.VDB_URL);
-//			String deployName = (String) valueMap.get(Operation.Value.VDB_DEPLOY_NAME);
-//			Object vdbVersion = valueMap.get(Operation.Value.VDB_VERSION);
-//			//strip off vdb extension if user added it
-//			if (deployName.endsWith(VDB_EXT)){  
-//				deployName = deployName.substring(0, deployName.lastIndexOf(VDB_EXT));  
-//			}
-//			if (vdbVersion!=null){
-//				deployName = deployName + "." + ((Integer)vdbVersion).toString() + VDB_EXT; //$NON-NLS-1$ 
-//			}
-//			//add vdb extension if there was no version
-//			if (!deployName.endsWith(VDB_EXT) &&  !deployName.endsWith(DYNAMIC_VDB_EXT)){ 
-//				deployName = deployName + VDB_EXT;  
-//			}
-//	
-//			try {
-//				URL url = new URL(vdbUrl);
-//				DeploymentUtils.deployArchive( deployName, connection.getDeploymentManager(), url, false);
-//			} catch (Exception e) {
-//				final String msg = "Exception executing operation: " + Platform.Operations.DEPLOY_VDB_BY_URL; //$NON-NLS-1$
-//				LOG.error(msg, e);
-//				throw new RuntimeException(e);
-//			}
+			operationResult.setContent((Collection<?>) executeOperation(
+					connection, operationName, address, additionalProperties));
+		} else if (operationName.equals(Platform.Operations.DEPLOY_VDB_BY_URL)) {
+			String vdbUrl = (String) valueMap.get(Operation.Value.VDB_URL);
+			String vdbName = (String) valueMap.get(Operation.Value.VDB_NAME);
+			HashMap<String, Object> resultValue = new HashMap();
+			HashMap<String, Object> resultMessage = new HashMap();
+
+			try {
+				result = executeDeployment(connection, vdbUrl, vdbName);
+				// If no exceptions, we assume the deployment worked
+				if (result.isSuccess()) {
+					operationResult.setContent("VDB deployed successfully!"); //$NON-NLS-1$
+				} else {
+					operationResult.setContent("failure: " + result.getFailureDescription()); //$NON-NLS-1$
+				}
+			} catch (Exception e) {
+				final String msg = "Exception executing operation: " + Platform.Operations.DEPLOY_VDB_BY_URL; //$NON-NLS-1$
+				LOG.error(msg, e);
+				throw new RuntimeException(e);
+			}
 		}
 	}
 
@@ -216,8 +244,10 @@ public class TeiidModuleView implements PluginConstants {
 			ExecutedResult operationResult, final String operationName,
 			final Map<String, Object> valueMap) throws Exception {
 		List<Map<String, Object>> resultObject = null;
-		String vdbName = (String) valueMap.get(PluginConstants.ComponentType.VDB.NAME);
-		String vdbVersion = (String) valueMap.get(PluginConstants.ComponentType.VDB.VERSION);
+		String vdbName = (String) valueMap
+				.get(PluginConstants.ComponentType.VDB.NAME);
+		String vdbVersion = (String) valueMap
+				.get(PluginConstants.ComponentType.VDB.VERSION);
 
 		if (operationName.equals(VDB.Operations.GET_SESSIONS)) {
 			resultObject = getSessions(connection, vdbName, vdbVersion);
@@ -226,35 +256,38 @@ public class TeiidModuleView implements PluginConstants {
 			resultObject = getSessions(connection, vdbName, vdbVersion);
 			operationResult.setContent(resultObject);
 		} else if (operationName.equals(VDB.Operations.GET_MATVIEWS)) {
-			resultObject = executeMaterializedViewQuery(connection, vdbName, vdbVersion);
+			resultObject = executeMaterializedViewQuery(connection, vdbName,
+					vdbVersion);
 			operationResult.setContent(resultObject);
 		} else if (operationName.equals(VDB.Operations.CLEAR_CACHE)) {
-			
+
 			Result result = null;
 			try {
-			result = executeClearCache(	connection, vdbName, Integer.parseInt(vdbVersion), 
-					(String) valueMap.get(Operation.Value.CACHE_TYPE));
-				
-			}catch(Exception e){
-				//Some failure during Clear Cache. Set message here since it has already been logged.
+				result = executeClearCache(connection, vdbName,
+						Integer.parseInt(vdbVersion),
+						(String) valueMap.get(Operation.Value.CACHE_TYPE));
+
+			} catch (Exception e) {
+				// Some failure during Clear Cache. Set message here since it
+				// has already been logged.
 				operationResult.setContent("failure - see log for details"); //$NON-NLS-1$
 			}
 
-			//If no exceptions, we assume the clear cache worked
-			if (result.isSuccess()){
+			// If no exceptions, we assume the clear cache worked
+			if (result.isSuccess()) {
 				operationResult.setContent("cache successfully cleared!"); //$NON-NLS-1$
-			}else{
+			} else {
 				operationResult.setContent("failure - see log for details"); //$NON-NLS-1$
 			}
-		
+
 		} else if (operationName.equals(VDB.Operations.RELOAD_MATVIEW)) {
-			Result result = reloadMaterializedView(connection,	vdbName, Integer.parseInt(vdbVersion),
+			Result result = reloadMaterializedView(connection, vdbName,
+					Integer.parseInt(vdbVersion),
 					(String) valueMap.get(Operation.Value.MATVIEW_SCHEMA),
 					(String) valueMap.get(Operation.Value.MATVIEW_TABLE),
 					(Boolean) valueMap.get(Operation.Value.INVALIDATE_MATVIEW));
-			
-			
-			if (result==null || !result.isSuccess()) {
+
+			if (result == null || !result.isSuccess()) {
 				operationResult.setContent("failure - see log for details"); //$NON-NLS-1$
 			} else {
 				operationResult.setContent("data successfully refreshed!"); //$NON-NLS-1$
@@ -267,147 +300,186 @@ public class TeiidModuleView implements PluginConstants {
 	 * Helper methods
 	 */
 
-	protected Result executeClearCache(
-			ASConnection connection, String vdbName, int vdbVersion, String cacheType) throws Exception {
+	protected Result executeClearCache(ASConnection connection, String vdbName,
+			int vdbVersion, String cacheType) throws Exception {
 
 		Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
 		additionalProperties.put(Operation.Value.CACHETYPE, cacheType);
 		additionalProperties.put(Operation.Value.VDB_NAME, vdbName);
 		additionalProperties.put(Operation.Value.VDB_VERSION, vdbVersion);
-	    Result result = executeOperation(connection, Platform.Operations.CLEAR_CACHE, DmrUtil.getTeiidAddress(), additionalProperties);
-		
-	    return result;
+		Result result = executeOperation(connection,
+				Platform.Operations.CLEAR_CACHE, DmrUtil.getTeiidAddress(),
+				additionalProperties);
+
+		return result;
 	}
 
-	protected List<Map<String,Object>> executeMaterializedViewQuery(
+	protected Result executeDeployment(ASConnection connection, String url,
+			String vbdName) throws Exception {
+		
+		// This will deploy a VDB via URL using the following format 
+		// deployment=Subscriptions-vdb.vdb:add(content=[{url=file:///pathtovdb/Subscriptions-vdb.vdb}],enabled=true)
+		
+		org.rhq.modules.plugins.jbossas7.json.Operation step1 = new org.rhq.modules.plugins.jbossas7.json.Operation(
+				ASSystem.Operations.ADD, ASSystem.Operations.DEPLOYMENT, vbdName); //$NON-NLS-1$ //$NON-NLS-2$
+		List<Object> content = new ArrayList<Object>(1);
+		Map<String, Object> contentValues = new HashMap<String, Object>();
+		contentValues.put(ASSystem.Parameters.VDB_URL, url); //$NON-NLS-1$
+		content.add(contentValues);
+		step1.addAdditionalProperty(ASSystem.Parameters.CONTENT, content); //$NON-NLS-1$
+		step1.addAdditionalProperty(ASSystem.Parameters.ENABLED, true); //$NON-NLS-1$
+
+		org.rhq.modules.plugins.jbossas7.json.CompositeOperation cop = new org.rhq.modules.plugins.jbossas7.json.CompositeOperation();
+		cop.addStep(step1);
+		Result result = connection.execute(cop);
+		
+		return result;
+	}
+
+	protected List<Map<String, Object>> executeMaterializedViewQuery(
 			ASConnection connection, String vdbName, String vdbVersion) {
 
-		Map<String,Object> additionalProperties = new LinkedHashMap<String,Object>();
+		Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
 		additionalProperties.put(Operation.Value.VDB_NAME, vdbName);
 		additionalProperties.put(Operation.Value.VDB_VERSION, vdbVersion);
-		additionalProperties.put(Operation.Value.SQL_QUERY, Operation.Value.MAT_VIEW_QUERY);
+		additionalProperties.put(Operation.Value.SQL_QUERY,
+				Operation.Value.MAT_VIEW_QUERY);
 		additionalProperties.put(Operation.Value.TIMEOUT_IN_MILLI, "9999999");
 
-		Result result = executeOperation(connection, Platform.Operations.EXECUTE_QUERY, DmrUtil.getTeiidAddress(), additionalProperties);
+		Result result = executeOperation(connection,
+				Platform.Operations.EXECUTE_QUERY, DmrUtil.getTeiidAddress(),
+				additionalProperties);
 
-		return (List<Map<String,Object>>)result.getResult();
+		return (List<Map<String, Object>>) result.getResult();
 
 	}
 
-	protected Result reloadMaterializedView(
-			ASConnection connection, String vdbName,
-			int vdbVersion, String schema, String table, Boolean invalidate) {
+	protected Result reloadMaterializedView(ASConnection connection,
+			String vdbName, int vdbVersion, String schema, String table,
+			Boolean invalidate) {
 
 		Result result = null;
 		String matView = schema + "." + table; //$NON-NLS-1$
 		String query = PluginConstants.Operation.Value.MAT_VIEW_REFRESH;
 		query = query.replace("param1", matView); //$NON-NLS-1$
 		query = query.replace("param2", invalidate.toString()); //$NON-NLS-1$
-		Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>(); 
+		Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
 		additionalProperties.put(Operation.Value.VDB_NAME, vdbName);
 		additionalProperties.put(Operation.Value.VDB_VERSION, vdbVersion);
 		additionalProperties.put(Operation.Value.SQL_QUERY, query);
 		additionalProperties.put(Operation.Value.TIMEOUT_IN_MILLI, "9999999");
 
-		result = executeOperation(connection, Operations.EXECUTE_QUERY, DmrUtil.getTeiidAddress(), additionalProperties);
-	
+		result = executeOperation(connection, Operations.EXECUTE_QUERY,
+				DmrUtil.getTeiidAddress(), additionalProperties);
+
 		return result;
 
 	}
 
-
 	protected List<Map<String, Object>> getTransactions(ASConnection connection) {
 
 		Address address = DmrUtil.getTeiidAddress();
-		Result result = executeOperation(connection, Platform.Operations.GET_TRANSACTIONS, address, null);
-		
+		Result result = executeOperation(connection,
+				Platform.Operations.GET_TRANSACTIONS, address, null);
+
 		return (List<Map<String, Object>>) result.getResult();
 
 	}
 
+	public static String getVDBStatus(ASConnection connection, String vdbName,
+			String vdbVersion) {
 
-	public static String getVDBStatus(ASConnection connection,
-			String vdbName, String vdbVersion) {
-		
-		Map<String,?> vdbMap = VDBComponent.getVdbMap(connection, vdbName, vdbVersion);
+		Map<String, ?> vdbMap = VDBComponent.getVdbMap(connection, vdbName,
+				vdbVersion);
 		return (String) vdbMap.get(VDBComponent.STATUS);
-	
+
 	}
 
+	//
+	// /**
+	// * @param mc
+	// * @return
+	// */
+	// private static ManagedComponent getBufferService(ASConnection connection,
+	// ManagedComponent mc) {
+	// // try {
+	// // mc = ProfileServiceUtil.getBufferService(connection);
+	// // } catch (NamingException e) {
+	////			final String msg = "NamingException getting the SessionService"; //$NON-NLS-1$
+	// // LOG.error(msg, e);
+	// // } catch (Exception e1) {
+	////			final String msg = "Exception getting the SessionService"; //$NON-NLS-1$
+	// // LOG.error(msg, e1);
+	// // }
+	// return mc;
+	// }
 
-//
-//	/**
-//	 * @param mc
-//	 * @return
-//	 */
-//	private static ManagedComponent getBufferService(ASConnection connection, ManagedComponent mc) {
-////		try {
-////			mc = ProfileServiceUtil.getBufferService(connection);
-////		} catch (NamingException e) {
-////			final String msg = "NamingException getting the SessionService"; //$NON-NLS-1$
-////			LOG.error(msg, e);
-////		} catch (Exception e1) {
-////			final String msg = "Exception getting the SessionService"; //$NON-NLS-1$
-////			LOG.error(msg, e1);
-////		}
-//		return mc;
-//	}
+	private Integer getQueryCount(ASConnection connection, String vdbName,
+			String vdbVersion) throws Exception {
 
-	private Integer getQueryCount(ASConnection connection, String vdbName, String vdbVersion) throws Exception {
-		
 		Address address = DmrUtil.getTeiidAddress();
-		Result result = executeOperation(connection, Platform.Operations.GET_QUERIES, address, null);
+		Result result = executeOperation(connection,
+				Platform.Operations.GET_QUERIES, address, null);
 		int count = 0;
-		
-		//If this is at the VDB level, look for instances of the VDB
-		count = getCountForVdb(vdbName, result, count);	
-		
-		return vdbName!=null?count:getArraySize(result);
-		
+
+		// If this is at the VDB level, look for instances of the VDB
+		count = getCountForVdb(vdbName, result, count);
+
+		return vdbName != null ? count : getArraySize(result);
+
 	}
 
-	private Integer getSessionCount(ASConnection connection, String vdbName, String vdbVersion) throws Exception {
+	private Integer getSessionCount(ASConnection connection, String vdbName,
+			String vdbVersion) throws Exception {
 
 		Address address = DmrUtil.getTeiidAddress();
-		Result result = executeOperation(connection, Platform.Operations.GET_SESSIONS, address, null);
+		Result result = executeOperation(connection,
+				Platform.Operations.GET_SESSIONS, address, null);
 		int count = 0;
-		
-		//If this is at the VDB level, look for instances of the VDB
-		count = getCountForVdb(vdbName, result, count);	
-		
-		return vdbName!=null?count:getArraySize(result);
+
+		// If this is at the VDB level, look for instances of the VDB
+		count = getCountForVdb(vdbName, result, count);
+
+		return vdbName != null ? count : getArraySize(result);
 	}
 
-	private List<Map<String, Object>> getSessions(ASConnection connection, String vdbName, String vdbVersion) throws Exception {
+	private List<Map<String, Object>> getSessions(ASConnection connection,
+			String vdbName, String vdbVersion) throws Exception {
 
 		Address address = DmrUtil.getTeiidAddress();
-		Result result = executeOperation(connection, Platform.Operations.GET_SESSIONS, address, null);
+		Result result = executeOperation(connection,
+				Platform.Operations.GET_SESSIONS, address, null);
 		List<Map<String, Object>> vdbList = new ArrayList<Map<String, Object>>();
-		
+
 		getVdbList(vdbName, result, vdbList);
-		
-		return vdbName!=null?vdbList:(List<Map<String, Object>>) result.getResult();
+
+		return vdbName != null ? vdbList : (List<Map<String, Object>>) result
+				.getResult();
 	}
-	
-	protected List<Map<String, Object>> getRequests(ASConnection connection, String vdbName, String vdbVersion) {
+
+	protected List<Map<String, Object>> getRequests(ASConnection connection,
+			String vdbName, String vdbVersion) {
 
 		Address address = DmrUtil.getTeiidAddress();
-		Result result = executeOperation(connection, Platform.Operations.GET_REQUESTS, address, null);
+		Result result = executeOperation(connection,
+				Platform.Operations.GET_REQUESTS, address, null);
 		List<Map<String, Object>> vdbList = new ArrayList<Map<String, Object>>();
-		
+
 		getVdbList(vdbName, result, vdbList);
-		
-		return vdbName!=null?vdbList:(List<Map<String, Object>>) result.getResult();
+
+		return vdbName != null ? vdbList : (List<Map<String, Object>>) result
+				.getResult();
 
 	}
 
 	private void getVdbList(String vdbName, Result result,
 			List<Map<String, Object>> vdbList) {
-		if (vdbName!=null){
-			if (result.getResult()!=null){
-				List<Map<String, Object>> list = (List<Map<String, Object>>) result.getResult();
-				for (Map<String, Object> value:list){
-					if (value.get(VDBComponent.VDBNAME).equals(vdbName)){
+		if (vdbName != null) {
+			if (result.getResult() != null) {
+				List<Map<String, Object>> list = (List<Map<String, Object>>) result
+						.getResult();
+				for (Map<String, Object> value : list) {
+					if (value.get(VDBComponent.VDBNAME).equals(vdbName)) {
 						vdbList.add(value);
 					}
 				}
@@ -416,11 +488,12 @@ public class TeiidModuleView implements PluginConstants {
 	}
 
 	private int getCountForVdb(String vdbName, Result result, int count) {
-		if (vdbName!=null){
-			if (result.getResult()!=null){
-				List<Map<String, Object>> list = (List<Map<String, Object>>) result.getResult();
-				for (Map<String, Object> value:list){
-					if (value.get(VDBComponent.VDBNAME).equals(vdbName)){
+		if (vdbName != null) {
+			if (result.getResult() != null) {
+				List<Map<String, Object>> list = (List<Map<String, Object>>) result
+						.getResult();
+				for (Map<String, Object> value : list) {
+					if (value.get(VDBComponent.VDBNAME).equals(vdbName)) {
 						count++;
 					}
 				}
@@ -430,54 +503,62 @@ public class TeiidModuleView implements PluginConstants {
 	}
 
 	private Integer getArraySize(Result result) throws Exception {
-		if (result.isSuccess()){
-			if (result.getResult()!=null);
-		}else{
+		if (result.isSuccess()) {
+			if (result.getResult() != null)
+				;
+		} else {
 			throw new Exception(result.getFailureDescription());
 		}
 
-		return result == null ? 0 : ((ArrayList<Map<String,Object>>)result.getResult()).size();
+		return result == null ? 0 : ((ArrayList<Map<String, Object>>) result
+				.getResult()).size();
 	}
 
-	private Integer getErrorCount(ASConnection connection, String vdbName, String vdbVersion) {
+	private Integer getErrorCount(ASConnection connection, String vdbName,
+			String vdbVersion) {
 
 		int count = 0;
-		
-		Map<String,?> vdbMap = VDBComponent.getVdbMap(connection, vdbName, vdbVersion);
-		
-		ArrayList<Map<String, Object>> modelList = (ArrayList<Map<String, Object>>) vdbMap.get(VDBComponent.MODELS);
 
-		for (Map<String, Object> modelMap: modelList) {
-			
-			
+		Map<String, ?> vdbMap = VDBComponent.getVdbMap(connection, vdbName,
+				vdbVersion);
+
+		ArrayList<Map<String, Object>> modelList = (ArrayList<Map<String, Object>>) vdbMap
+				.get(VDBComponent.MODELS);
+
+		for (Map<String, Object> modelMap : modelList) {
+
 			// Get any model errors/warnings and increment count
-			ArrayList<Map<String, String>> errors = (ArrayList<Map<String, String>>) modelMap.get(VDBComponent.VALIDITY_ERRORS);
+			ArrayList<Map<String, String>> errors = (ArrayList<Map<String, String>>) modelMap
+					.get(VDBComponent.VALIDITY_ERRORS);
 
 			if (errors != null) {
 				count += errors.size();
 			}
 		}
-		
+
 		return count;
 	}
 
 	protected Map<String, Object> getCacheStats(ASConnection connection,
 			String type) {
-		
+
 		Map<String, Object> additionalProperties = new HashMap<String, Object>();
 		additionalProperties.put(Operation.Value.CACHETYPE, type);
-	    Result result = executeOperation(connection, Platform.Operations.GET_CACHE_STATS, DmrUtil.getTeiidAddress(), additionalProperties);
-		
-	    return (Map<String, Object>)result.getResult();
-		
+		Result result = executeOperation(connection,
+				Platform.Operations.GET_CACHE_STATS, DmrUtil.getTeiidAddress(),
+				additionalProperties);
+
+		return (Map<String, Object>) result.getResult();
+
 	}
 
-	protected Integer getLongRunningQueryCount(
-			ASConnection connection, String vdbName, String vdbVersion) throws Exception {
+	protected Integer getLongRunningQueryCount(ASConnection connection,
+			String vdbName, String vdbVersion) throws Exception {
 
 		Address address = DmrUtil.getTeiidAddress();
-		Result result = executeOperation(connection, Platform.Operations.GET_LONGRUNNINGQUERIES, address, null);
-		
+		Result result = executeOperation(connection,
+				Platform.Operations.GET_LONGRUNNINGQUERIES, address, null);
+
 		return getArraySize(result);
 	}
 
@@ -485,26 +566,32 @@ public class TeiidModuleView implements PluginConstants {
 			ASConnection connection) throws Exception {
 
 		Address address = DmrUtil.getTeiidAddress();
-		Result result = executeOperation(connection, Platform.Operations.GET_LONGRUNNINGQUERIES, address, null);
-		
+		Result result = executeOperation(connection,
+				Platform.Operations.GET_LONGRUNNINGQUERIES, address, null);
+
 		return (List<Map<String, Object>>) result.getResult();
 	}
-	
-	public static Result executeOperation(ASConnection connection, String operationName, Address operationAddress, Map<String, Object> additionalProperties) {
-		org.rhq.modules.plugins.jbossas7.json.Operation op = new org.rhq.modules.plugins.jbossas7.json.Operation(operationName, operationAddress);
-        if (additionalProperties!=null){
-        	op.setAdditionalProperties(additionalProperties);
-        }
-		
+
+	public static Result executeOperation(ASConnection connection,
+			String operationName, Address operationAddress,
+			Map<String, Object> additionalProperties) {
+		org.rhq.modules.plugins.jbossas7.json.Operation op = new org.rhq.modules.plugins.jbossas7.json.Operation(
+				operationName, operationAddress);
+		if (additionalProperties != null) {
+			op.setAdditionalProperties(additionalProperties);
+		}
+
 		Result result = connection.execute(op);
 		return result;
 	}
-	
+
 	protected Map<String, Object> getEngineStatistic(ASConnection connection) {
 
-		Result result = executeOperation(connection, Platform.Operations.GET_ENGINE_STATISTICS, DmrUtil.getTeiidAddress(), null); 
-		
-		return (Map<String, Object>)result.getResult();
+		Result result = executeOperation(connection,
+				Platform.Operations.GET_ENGINE_STATISTICS,
+				DmrUtil.getTeiidAddress(), null);
+
+		return (Map<String, Object>) result.getResult();
 	}
-	
+
 }

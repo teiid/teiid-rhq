@@ -103,8 +103,7 @@ public class PlatformComponent extends Facet {
 			valueMap.put(Operation.Value.SESSION_ID, configuration.getSimple(Operation.Value.SESSION_ID).getStringValue());
 		} else if (name.equals(Platform.Operations.DEPLOY_VDB_BY_URL)) {
 			valueMap.put(Operation.Value.VDB_URL, configuration.getSimple(Operation.Value.VDB_URL).getStringValue());
-			valueMap.put(Operation.Value.VDB_DEPLOY_NAME, configuration.getSimple(Operation.Value.VDB_DEPLOY_NAME).getStringValue());
-			valueMap.put(Operation.Value.VDB_VERSION, configuration.getSimple(Operation.Value.VDB_VERSION).getIntegerValue());
+			valueMap.put(Operation.Value.VDB_NAME, configuration.getSimple(Operation.Value.VDB_NAME).getStringValue());
 		}
 	}
 
