@@ -89,27 +89,12 @@ public class TeiidModuleView implements PluginConstants {
 
 		Object resultObject = new Object();
 
-<<<<<<< HEAD
-		if (metric
-				.equals(PluginConstants.ComponentType.Platform.Metrics.QUERY_COUNT)) {
-			resultObject = new Double(getQueryCount(connection, null, null)
-					.doubleValue());
-		} else if (metric
-				.equals(PluginConstants.ComponentType.Platform.Metrics.SESSION_COUNT)) {
-			resultObject = new Double(getSessionCount(connection, null, null)
-					.doubleValue());
-		} else if (metric
-				.equals(PluginConstants.ComponentType.Platform.Metrics.LONG_RUNNING_QUERIES)) {
-			resultObject = new Double(getLongRunningQueryCount(connection,
-					null, null).doubleValue());
-=======
 		if (metric.equals(PluginConstants.ComponentType.Platform.Metrics.QUERY_COUNT)) {
 			resultObject = new Double(getQueryCount(connection).doubleValue());
 		} else if (metric.equals(PluginConstants.ComponentType.Platform.Metrics.SESSION_COUNT)) {
 			resultObject = new Double(getSessionCount(connection, null, null).doubleValue());
 		} else if (metric.equals(PluginConstants.ComponentType.Platform.Metrics.LONG_RUNNING_QUERIES)) {
 			resultObject = new Double(getLongRunningQueryCount(connection, null, null).doubleValue());
->>>>>>> 315b156b465f17cb3359f071c836ce7855b0352e
 		} else if (metric.startsWith(ENGINE_STATISTIC + ".")) { //$NON-NLS-1$ 
 			return getEngineStatisticProperty(connection, metric);
 		} else if (metric.startsWith(PREPARED_PLAN_CACHE + ".") //$NON-NLS-1$
@@ -149,27 +134,12 @@ public class TeiidModuleView implements PluginConstants {
 		} else if (metric
 				.equals(PluginConstants.ComponentType.VDB.Metrics.STATUS)) {
 			resultObject = getVDBStatus(connection, vdbName, vdbVersion);
-<<<<<<< HEAD
-		} else if (metric
-				.equals(PluginConstants.ComponentType.VDB.Metrics.QUERY_COUNT)) {
-			resultObject = new Double(getQueryCount(connection, vdbName,
-					vdbVersion).doubleValue());
-		} else if (metric
-				.equals(PluginConstants.ComponentType.VDB.Metrics.SESSION_COUNT)) {
-			resultObject = new Double(getSessionCount(connection, vdbName,
-					vdbVersion).doubleValue());
-		} else if (metric
-				.equals(PluginConstants.ComponentType.VDB.Metrics.LONG_RUNNING_QUERIES)) {
-			resultObject = new Double(getLongRunningQueryCount(connection,
-					vdbName, vdbVersion).doubleValue());
-=======
 		} else if (metric.equals(PluginConstants.ComponentType.VDB.Metrics.QUERY_COUNT)) {
 			resultObject = new Double(getQueryCountForVDB(connection, vdbName, vdbVersion).doubleValue());
 		} else if (metric.equals(PluginConstants.ComponentType.VDB.Metrics.SESSION_COUNT)) {
 			resultObject = new Double(getSessionCount(connection, vdbName, vdbVersion).doubleValue());
 		} else if (metric.equals(PluginConstants.ComponentType.VDB.Metrics.LONG_RUNNING_QUERIES)) {
 			resultObject = new Double(getLongRunningQueryCount(connection, vdbName, vdbVersion).doubleValue());
->>>>>>> 315b156b465f17cb3359f071c836ce7855b0352e
 		}
 		return resultObject;
 	}
@@ -179,26 +149,12 @@ public class TeiidModuleView implements PluginConstants {
 	 */
 
 	public void executeOperation(ASConnection connection,
-<<<<<<< HEAD
-			ExecutedResult operationResult, final Map<String, Object> valueMap)
-			throws Exception {
-
-		if (operationResult.getComponentType().equals(
-				PluginConstants.ComponentType.Platform.NAME)) {
-			executePlatformOperation(connection, operationResult,
-					operationResult.getOperationName(), valueMap);
-		} else if (operationResult.getComponentType().equals(
-				PluginConstants.ComponentType.VDB.NAME)) {
-			executeVdbOperation(connection, operationResult,
-					operationResult.getOperationName(), valueMap);
-=======
 			ExecutedResult operationResult, final Map<String, Object> valueMap) throws Exception {
 
 		if (operationResult.getComponentType().equals(PluginConstants.ComponentType.Platform.NAME)) {
 		    executePlatformOperation(connection, operationResult,	operationResult.getOperationName(), valueMap);
 		} else if (operationResult.getComponentType().equals(	PluginConstants.ComponentType.VDB.NAME)) {
 			executeVdbOperation(connection, operationResult, operationResult.getOperationName(), valueMap);
->>>>>>> 315b156b465f17cb3359f071c836ce7855b0352e
 		}
 	}
 
@@ -413,70 +369,15 @@ public class TeiidModuleView implements PluginConstants {
 
 	}
 
-<<<<<<< HEAD
-	public static String getVDBStatus(ASConnection connection, String vdbName,
-			String vdbVersion) {
-
-		Map<String, ?> vdbMap = VDBComponent.getVdbMap(connection, vdbName,
-				vdbVersion);
-=======
 	public static String getVDBStatus(ASConnection connection,
 			String vdbName, String vdbVersion) {
 		
 		Map<String,?> vdbMap = VDBComponent.getVdbMap(connection, vdbName, vdbVersion);
->>>>>>> 315b156b465f17cb3359f071c836ce7855b0352e
 		return (String) vdbMap.get(VDBComponent.STATUS);
 
 	}
 
-<<<<<<< HEAD
-	//
-	// /**
-	// * @param mc
-	// * @return
-	// */
-	// private static ManagedComponent getBufferService(ASConnection connection,
-	// ManagedComponent mc) {
-	// // try {
-	// // mc = ProfileServiceUtil.getBufferService(connection);
-	// // } catch (NamingException e) {
-	////			final String msg = "NamingException getting the SessionService"; //$NON-NLS-1$
-	// // LOG.error(msg, e);
-	// // } catch (Exception e1) {
-	////			final String msg = "Exception getting the SessionService"; //$NON-NLS-1$
-	// // LOG.error(msg, e1);
-	// // }
-	// return mc;
-	// }
 
-	private Integer getQueryCount(ASConnection connection, String vdbName,
-			String vdbVersion) throws Exception {
-
-		Address address = DmrUtil.getTeiidAddress();
-		Result result = executeOperation(connection,
-				Platform.Operations.GET_QUERIES, address, null);
-		int count = 0;
-
-		// If this is at the VDB level, look for instances of the VDB
-		count = getCountForVdb(vdbName, result, count);
-
-		return vdbName != null ? count : getArraySize(result);
-
-	}
-
-	private Integer getSessionCount(ASConnection connection, String vdbName,
-			String vdbVersion) throws Exception {
-
-		Address address = DmrUtil.getTeiidAddress();
-		Result result = executeOperation(connection,
-				Platform.Operations.GET_SESSIONS, address, null);
-		int count = 0;
-
-		// If this is at the VDB level, look for instances of the VDB
-		count = getCountForVdb(vdbName, result, count);
-
-		return vdbName != null ? count : getArraySize(result);
-=======
 	private Integer getQueryCountForVDB(ASConnection connection, String vdbName, String vdbVersion) throws Exception {
 		
 		Address address = DmrUtil.getTeiidAddress();
@@ -505,7 +406,6 @@ public class TeiidModuleView implements PluginConstants {
 		Result result = executeOperation(connection, Platform.Operations.GET_SESSIONS, address, null);
 		
 		return vdbName!=null?getCountForVdb(connection, vdbName, vdbVersion, result):getArraySize(result);
->>>>>>> 315b156b465f17cb3359f071c836ce7855b0352e
 	}
 
 	private List<Map<String, Object>> getSessions(ASConnection connection,
@@ -521,21 +421,6 @@ public class TeiidModuleView implements PluginConstants {
 		return vdbName != null ? vdbList : (List<Map<String, Object>>) result
 				.getResult();
 	}
-<<<<<<< HEAD
-
-	protected List<Map<String, Object>> getRequests(ASConnection connection,
-			String vdbName, String vdbVersion) {
-
-		Address address = DmrUtil.getTeiidAddress();
-		Result result = executeOperation(connection,
-				Platform.Operations.GET_REQUESTS, address, null);
-		List<Map<String, Object>> vdbList = new ArrayList<Map<String, Object>>();
-
-		getVdbList(vdbName, result, vdbList);
-
-		return vdbName != null ? vdbList : (List<Map<String, Object>>) result
-				.getResult();
-=======
 	
 	protected List<Map<String, Object>> getRequests(ASConnection connection) {
 
@@ -555,7 +440,6 @@ public class TeiidModuleView implements PluginConstants {
 		Result result = executeOperation(connection, VDB.Operations.GET_REQUESTS, address, additionalProperties);
 		
 		return (List<Map<String, Object>>) result.getResult();
->>>>>>> 315b156b465f17cb3359f071c836ce7855b0352e
 
 	}
 
@@ -574,15 +458,6 @@ public class TeiidModuleView implements PluginConstants {
 		}
 	}
 
-<<<<<<< HEAD
-	private int getCountForVdb(String vdbName, Result result, int count) {
-		if (vdbName != null) {
-			if (result.getResult() != null) {
-				List<Map<String, Object>> list = (List<Map<String, Object>>) result
-						.getResult();
-				for (Map<String, Object> value : list) {
-					if (value.get(VDBComponent.VDBNAME).equals(vdbName)) {
-=======
 	private int getCountForVdb(ASConnection connection, String vdbName, String vdbVersion, Result result) {
 		int count = 0;
 		if (vdbName!=null){
@@ -608,7 +483,6 @@ public class TeiidModuleView implements PluginConstants {
 						}
 					}else{
 					if (value.get(VDBComponent.VDBNAME).equals(vdbName)){
->>>>>>> 315b156b465f17cb3359f071c836ce7855b0352e
 						count++;
 					}
 					}
@@ -619,17 +493,6 @@ public class TeiidModuleView implements PluginConstants {
 	}
 
 	private Integer getArraySize(Result result) throws Exception {
-<<<<<<< HEAD
-		if (result.isSuccess()) {
-			if (result.getResult() != null)
-				;
-		} else {
-			throw new Exception(result.getFailureDescription());
-		}
-
-		return result == null ? 0 : ((ArrayList<Map<String, Object>>) result
-				.getResult()).size();
-=======
 		if (result.isSuccess()){
 		}else{
 			throw new Exception(result.getFailureDescription());
@@ -638,7 +501,6 @@ public class TeiidModuleView implements PluginConstants {
 		Object object = result.getResult();
 		
 		return null==object ? 0 : ((ArrayList<Map<String,Object>>)result.getResult()).size();
->>>>>>> 315b156b465f17cb3359f071c836ce7855b0352e
 	}
 
 	private Integer getErrorCount(ASConnection connection, String vdbName,
@@ -683,16 +545,9 @@ public class TeiidModuleView implements PluginConstants {
 			String vdbName, String vdbVersion) throws Exception {
 
 		Address address = DmrUtil.getTeiidAddress();
-<<<<<<< HEAD
-		Result result = executeOperation(connection,
-				Platform.Operations.GET_LONGRUNNINGQUERIES, address, null);
-
-		return getArraySize(result);
-=======
 		Result result = executeOperation(connection, Platform.Operations.GET_LONGRUNNINGQUERIES, address, null);
 		
 		return vdbName!=null?getCountForVdb(connection, vdbName, vdbVersion, result):getArraySize(result);
->>>>>>> 315b156b465f17cb3359f071c836ce7855b0352e
 	}
 
 	protected List<Map<String, Object>> getLongRunningQueries(
