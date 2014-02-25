@@ -66,7 +66,7 @@
 
 
 <plugin name="Teiid" displayName="Teiid Plugin" package="org.teiid.rhq.plugin"
-	version="3.0.0" description="Supports management and monitoring of JBoss Teiid"
+	version="2.0.0" description="Supports management and monitoring of Red Hat JBoss Data Virtualization"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:xmlns:rhq-plugin"
 	xmlns:c="urn:xmlns:rhq-configuration">
 
@@ -74,7 +74,7 @@
 
 	<server name="Data Virtualization" description="Teiid Data Virtualization"
 		class="PlatformComponent" discovery="PlatformDiscoveryComponent"
-		singleton="true">
+		singleton="true" >
 
 		<runs-inside>
 			<parent-resource-type name="JBossAS7 Standalone Server"
@@ -87,21 +87,22 @@
 				<c:list-property name="list">
 					<c:map-property name="map">
 						<c:simple-property displayName="Request ID"
-							name="execution-id" type="string" description="The id for the request" />
-						<c:simple-property displayName="Session ID"
-							name="session-id" type="string" description="The session id the request is using" />
-						<c:simple-property displayName="SQL String"
-							name="command" type="string" description="The SQL string for this query" />
-						<c:simple-property displayName="Source Request"
-							name="source-request" type="string"
-							description="If false,this is the top level query. If true, this a physical source query." />
-						<c:simple-property displayName="Start Time"
-							name="start-time" type="string" description="The time this query began" />
-						<c:simple-property displayName="Transaction ID"
-							name="transaction-id" type="string"
-							description="The transaction XID if there is a transaction involved" />
+							name="execution-id" type="string" description="The request identifier" />
 						<c:simple-property displayName="Node ID" name="node-id"
-							type="string" description="The node ID of this query" />
+							type="string" description="The node identifier" />
+						<c:simple-property displayName="Session ID"
+							name="session-id" type="string" description="Session identifier" />
+						<c:simple-property displayName="Start Time"
+							name="start-time" type="string" description="Time when request submitted" />
+						<c:simple-property displayName="Source request?"
+							name="source-request" type="string"
+							description="True if this is a source level request" />
+						<c:simple-property displayName="Processing State"
+							name="processing-state" type="string" description="The current processing state" />
+						<c:simple-property displayName="Thread State"
+							name="thread-state" type="string" description="The current thread state" />
+						<c:simple-property displayName="Command" name="command"
+							type="string" description="SQL Command" />
 					</c:map-property>
 				</c:list-property>
 			</results>
@@ -128,15 +129,19 @@
 						<c:simple-property displayName="IP Address"
 							name="ip-address" type="string"
 							description="IP address from where this session was created" />
-						<c:simple-property displayName="Last ping time"
-							name="last-ping-time" type="string" description="Last ping time" />
 						<c:simple-property displayName="User Name" name="user-name"
 							type="string" description="User associated with this session" />
 						<c:simple-property displayName="VDB Name" name="vdb-name"
 							type="string" description="VDB associated with this session" />
+						<c:simple-property displayName="VDB Version"
+							name="vdb-version" type="string"
+							description="VDB version of the VDB associated with this session" />
 						<c:simple-property displayName="Security Domain"
 							name="security-domain" type="string"
 							description="Security Domain that session logged into" />
+						<c:simple-property displayName="Client Hardware Address"
+							name="client-hardware-address" type="string"
+							description="The hardware address of the client associated with this session" />
 					</c:map-property>
 				</c:list-property>
 			</results>
@@ -177,20 +182,21 @@
 					<c:map-property name="map">
 						<c:simple-property displayName="Request ID"
 							name="execution-id" type="string" description="The request identifier" />
+						<c:simple-property displayName="Node ID" name="node-id"
+							type="string" description="The node identifier" />
 						<c:simple-property displayName="Session ID"
 							name="session-id" type="string" description="Session identifier" />
 						<c:simple-property displayName="Start Time"
 							name="start-time" type="string" description="Time when request submitted" />
-						<c:simple-property displayName="Last ping time"
-							name="command" type="string" description="SQL Command" />
-						<c:simple-property displayName="Connector level request?"
+						<c:simple-property displayName="Source request?"
 							name="source-request" type="string"
-							description="True if this is a connector level request" />
-						<c:simple-property displayName="Node ID" name="node-id"
-							type="string" description="The node identifier" />
-						<c:simple-property displayName="Transaction identifier"
-							name="transaction-id" type="string"
-							description="Transaction XID if a transaction is involved" />
+							description="True if this is a source level request" />
+						<c:simple-property displayName="Processing State"
+							name="processing-state" type="string" description="The current processing state" />
+						<c:simple-property displayName="Thread State"
+							name="thread-state" type="string" description="The current thread state" />
+						<c:simple-property displayName="Command" name="command"
+							type="string" description="SQL Command" />
 					</c:map-property>
 				</c:list-property>
 			</results>
@@ -202,7 +208,7 @@
 				<c:simple-property displayName="Session ID" name="session-id"
 					type="string" required="true"
 					description="The ID of the session that the request to cancel is associated with" />
-				<c:simple-property displayName="Request ID" name="request-id"
+				<c:simple-property displayName="Request ID" name="execution-id"
 					type="long" required="true" description="The ID of the request to cancel" />
 			</parameters>
 		</operation>
@@ -629,19 +635,25 @@
 							<c:simple-property displayName="IP Address"
 								name="ip-address" type="string"
 								description="IP address from where this session was created" />
-							<c:simple-property displayName="Last ping time"
-								name="last-ping-time" type="string" description="Last ping time" />
 							<c:simple-property displayName="User Name"
 								name="user-name" type="string" description="User associated with this session" />
+							<c:simple-property displayName="VDB Name" name="vdb-name"
+								type="string" description="VDB associated with this session" />
+							<c:simple-property displayName="VDB Version"
+								name="vdb-version" type="string"
+								description="VDB version of the VDB associated with this session" />
 							<c:simple-property displayName="Security Domain"
 								name="security-domain" type="string"
 								description="Security Domain that session logged into" />
+							<c:simple-property displayName="Client Hardware Address"
+								name="client-hardware-address" type="string"
+								description="The hardware address of the client associated with this session" />
 						</c:map-property>
 					</c:list-property>
 				</results>
 			</operation>
 
-			<operation name="getRequestsUsingVDB" displayName="View VDB requests"
+			<operation name="list-requests-per-vdb" displayName="View VDB requests"
 				description="Get current requests executing against this VDB">
 				<results>
 
@@ -650,24 +662,22 @@
 						required="false">
 						<c:map-property name="map">
 							<c:simple-property displayName="Request ID"
-								name="request-id" type="string" description="The request identifier" />
-							<c:simple-property displayName="Session ID"
-								name="session-id" type="string" description="Session identifier" />
-							<c:simple-property displayName="Execution ID"
-								name="execution-id" type="string" description="Unique Identifier for Request" />
-							<c:simple-property displayName="Start Time"
-								name="getStartTime" type="string" description="Time when request submitted" />
-							<c:simple-property displayName="Processing Time"
-								name="processing-time" type="string" description="Processing time for the request" />
-							<c:simple-property displayName="Last ping time"
-								name="get-command" type="string" description="SQL Command" />
-							<c:simple-property displayName="Connector level request?"
-								name="source-request" type="string"
-								description="True if this is a connector level request" />
+								name="execution-id" type="string" description="The request identifier" />
 							<c:simple-property displayName="Node ID" name="node-id"
 								type="string" description="The node identifier" />
-							<c:simple-property displayName="Transaction identifier"
-								name="xid" type="string" description="Transaction XID if a transaction is involved" />
+							<c:simple-property displayName="Session ID"
+								name="session-id" type="string" description="Session identifier" />
+							<c:simple-property displayName="Start Time"
+								name="start-time" type="string" description="Time when request submitted" />
+							<c:simple-property displayName="Source request?"
+								name="source-request" type="string"
+								description="True if this is a source level request" />
+							<c:simple-property displayName="Processing State"
+								name="processing-state" type="string" description="The current processing state" />
+							<c:simple-property displayName="Thread State"
+								name="thread-state" type="string" description="The current thread state" />
+							<c:simple-property displayName="Command" name="command"
+								type="string" description="SQL Command" />
 						</c:map-property>
 					</c:list-property>
 				</results>
@@ -762,6 +772,18 @@
 				displayType="detail" category="throughput" property="sessionCount"
 				description="The number of user connections currently active." />
 
+<<<<<<< HEAD
+=======
+			<!-- <content name="vdb" displayName="VDB File" category="deployable" 
+				isCreationType="true"> <configuration> <c:group name="deployment" displayName="Deployment 
+				Options"> <c:simple-property displayName="VDB Version" name="vdbVersion" 
+				type="integer" required="false" description="The version to use for the deployed 
+				VDB. Leave blank to use the default version as determined by the deployer, 
+				overwrite a current version, or use the VDB file name version (i.e. vdbname.{version}.vdb). 
+				The version parameter is not applicable for deployment of dynamic VDBs." 
+				/> </c:group> </configuration> </content> -->
+
+>>>>>>> 315b156b465f17cb3359f071c836ce7855b0352e
 			<resource-configuration>
 				<c:group name="general" displayName="General"
 					hiddenByDefault="false">

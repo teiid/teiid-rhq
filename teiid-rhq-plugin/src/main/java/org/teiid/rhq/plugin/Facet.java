@@ -51,6 +51,7 @@ import org.teiid.rhq.admin.TeiidModuleView;
 import org.teiid.rhq.plugin.objects.ConfigurationWriteDelegate;
 import org.teiid.rhq.plugin.objects.ExecutedOperationResultImpl;
 import org.teiid.rhq.plugin.objects.ExecutedResult;
+import org.teiid.rhq.plugin.util.DmrUtil;
 import org.teiid.rhq.plugin.util.PluginConstants;
 
 /**
@@ -95,10 +96,10 @@ public abstract class Facet extends BaseComponent<BaseComponent<?>> implements
 
 	private Map<String, String> propertiesMap = new HashMap<String, String>();
 	
-    String path;
-    Address address;
+	Address address;
+	
 	public Address getAddress() {
-		return address;
+		return  address;
 	}
 
 	String key;
@@ -135,8 +136,7 @@ public abstract class Facet extends BaseComponent<BaseComponent<?>> implements
 		resourceContext = context;
 		deploymentName = context.getResourceKey();
         pluginConfiguration = context.getPluginConfiguration();
-        path = pluginConfiguration.getSimpleValue("path");
-        address = new Address(path);
+        address = DmrUtil.getTeiidAddress();
         key = context.getResourceKey();
 	}
 

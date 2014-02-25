@@ -21,7 +21,9 @@
  */
 package org.teiid.rhq.plugin.objects;
 
+import java.text.DateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -94,11 +96,21 @@ public class ExecutedOperationResultImpl implements ExecutedResult {
 		while (resultIter.hasNext()) {
 			Map reportRowMap = (Map) resultIter.next();
 			Iterator reportRowKeySetIter = reportRowMap.keySet().iterator();
-			pm = new PropertyMap(MAPNAME); //$NON-NLS-1$			
+			pm = new PropertyMap(MAPNAME); //$NON-NLS-1$	
+			DateFormat df = DateFormat.getDateTimeInstance();
 
 			while (reportRowKeySetIter.hasNext()) {
 				String key = (String) reportRowKeySetIter.next();
-				pm.put(new PropertySimple(key, reportRowMap.get(key)==null?"":reportRowMap.get(key))); //$NON-NLS-1$
+				String date = null;
+				//Format known dateTime fields from Long to date formatted strings
+				if (key.equals("created-time") ||
+				    key.equals("last-ping-time") ||
+				    key.equals("start-time")){
+					date = df.format(new Date((Long)reportRowMap.get(key)));
+					pm.put(new PropertySimple(key, date)); 
+				}else{
+					pm.put(new PropertySimple(key, reportRowMap.get(key)==null?"":reportRowMap.get(key))); //$NON-NLS-1$
+				}
 			}
 			list.add(pm);
 		}
