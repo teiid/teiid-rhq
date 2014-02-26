@@ -88,7 +88,7 @@
 
 	<properties>
         <version.org.jboss.integration-platform>6.0.0-SNAPSHOT</version.org.jboss.integration-platform>
-        <jbossas-version>7.2.0.Alpha1-redhat-4</jbossas-version>
+        <jbossas-version>7.2.0.Final</jbossas-version>
 
 		<jopr.jboss.as7.plugin.version>4.4.0</jopr.jboss.as7.plugin.version>
 		<org.rhq.version>4.4.0</org.rhq.version>
