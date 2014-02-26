@@ -97,7 +97,7 @@ public class PlatformComponent extends Facet {
 		if (name.equals(Platform.Operations.KILL_REQUEST)) {
 			valueMap.put(Operation.Value.REQUEST_ID, configuration.getSimple(Operation.Value.REQUEST_ID).getLongValue());
 			valueMap.put(Operation.Value.SESSION_ID, configuration.getSimple(Operation.Value.SESSION_ID).getStringValue());
-		} else if (name.equals(Platform.Operations.KILL_TRANSACTION)) {
+		} else if (name.equals(Platform.Operations.KILL_REQUEST)) {
 			valueMap.put(Operation.Value.TRANSACTION_ID, configuration.getSimple(Operation.Value.TRANSACTION_ID).getStringValue());
 		} else if (name.equals(Platform.Operations.KILL_SESSION)) {
 			valueMap.put(Operation.Value.SESSION_ID, configuration.getSimple(Operation.Value.SESSION_ID).getStringValue());
