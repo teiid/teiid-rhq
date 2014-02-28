@@ -102,14 +102,13 @@ public interface PluginConstants {
 
 			public static interface Operations {
 
-				public final static String GET_QUERIES = "listQueries"; //$NON-NLS-1$	
 				public final static String CLEAR_CACHE = "clearCache"; //$NON-NLS-1$	
 				public final static String EXECUTE_QUERIES = "executeQuery"; //$NON-NLS-1$
 				public final static String GET_LONGRUNNINGQUERIES = "getLongRunningRequests"; //$NON-NLS-1$
 				public final static String KILL_REQUEST = "cancelRequest"; //$NON-NLS-1$
 				public final static String KILL_SESSION = "terminateSession"; //$NON-NLS-1$
 				public final static String GET_PROPERTIES = "getProperties"; //$NON-NLS-1$
-				public final static String GET_REQUESTS = "getRequestsUsingVDB"; //$NON-NLS-1$
+				public final static String GET_REQUESTS = "list-requests-per-vdb"; //$NON-NLS-1$
 				public final static String GET_SESSIONS = "getSessions"; //$NON-NLS-1$
 				public final static String GET_MATVIEWS = "getMaterializedViews"; //$NON-NLS-1$
 				public final static String RELOAD_MATVIEW = "reloadMaterializedView"; //$NON-NLS-1$
