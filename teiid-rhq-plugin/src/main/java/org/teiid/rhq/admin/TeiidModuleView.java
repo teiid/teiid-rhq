@@ -252,7 +252,7 @@ public class TeiidModuleView implements PluginConstants {
 			resultObject = getSessions(connection, vdbName, vdbVersion);
 			operationResult.setContent(resultObject);
 		} else if (operationName.equals(VDB.Operations.GET_REQUESTS)) {
-			resultObject = getSessions(connection, vdbName, vdbVersion);
+			resultObject = getRequests(connection, vdbName, vdbVersion);
 			operationResult.setContent(resultObject);
 		} else if (operationName.equals(VDB.Operations.GET_MATVIEWS)) {
 			resultObject = executeMaterializedViewQuery(connection, vdbName,
@@ -417,14 +417,19 @@ public class TeiidModuleView implements PluginConstants {
 			String vdbVersion) throws Exception {
 
 		Address address = DmrUtil.getTeiidAddress();
-		Result result = executeOperation(connection,
-				Platform.Operations.GET_QUERIES, address, null);
-		int count = 0;
+		Result result;
+		if (vdbName!=null){
+			result = executeOperation(connection,
+					Platform.Operations.GET_REQUESTS, address, null);
+		}else{
+			Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
+			additionalProperties.put(Operation.Value.VDB_NAME, vdbName);
+			additionalProperties.put(Operation.Value.VDB_VERSION, vdbVersion);
+			result = executeOperation(connection,
+					VDB.Operations.GET_REQUESTS, address, additionalProperties);
+		}
 
-		// If this is at the VDB level, look for instances of the VDB
-		count = getCountForVdb(vdbName, result, count);
-
-		return vdbName != null ? count : getArraySize(result);
+		return getArraySize(result);
 
 	}
 
@@ -460,14 +465,19 @@ public class TeiidModuleView implements PluginConstants {
 			String vdbName, String vdbVersion) {
 
 		Address address = DmrUtil.getTeiidAddress();
-		Result result = executeOperation(connection,
-				Platform.Operations.GET_REQUESTS, address, null);
-		List<Map<String, Object>> vdbList = new ArrayList<Map<String, Object>>();
+		Result result;
+		if (vdbName==null){
+			result = executeOperation(connection,
+					Platform.Operations.GET_REQUESTS, address, null);
+		}else{
+			Map<String, Object> additionalProperties = new LinkedHashMap<String, Object>();
+			additionalProperties.put(Operation.Value.VDB_NAME, vdbName);
+			additionalProperties.put(Operation.Value.VDB_VERSION, vdbVersion);
+			result = executeOperation(connection,
+					VDB.Operations.GET_REQUESTS, address, additionalProperties);
+		}
 
-		getVdbList(vdbName, result, vdbList);
-
-		return vdbName != null ? vdbList : (List<Map<String, Object>>) result
-				.getResult();
+		return (List<Map<String, Object>>) result.getResult();
 
 	}
 
@@ -503,13 +513,11 @@ public class TeiidModuleView implements PluginConstants {
 
 	private Integer getArraySize(Result result) throws Exception {
 		if (result.isSuccess()) {
-			if (result.getResult() != null)
-				;
 		} else {
 			throw new Exception(result.getFailureDescription());
 		}
 
-		return result == null ? 0 : ((ArrayList<Map<String, Object>>) result
+		return result == null ||  result.getResult() == null ? 0 : ((ArrayList<Map<String, Object>>) result
 				.getResult()).size();
 	}
 

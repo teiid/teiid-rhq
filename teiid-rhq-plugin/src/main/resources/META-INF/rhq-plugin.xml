@@ -167,7 +167,7 @@
 		</operation>
 
 
-		<operation name="list-requests" displayName="View current requests"
+		<operation name="list-requests" displayName="View current equests"
 			description="Get current requests executing against this Teiid instance">
 			<results>
 
@@ -181,7 +181,7 @@
 							name="session-id" type="string" description="Session identifier" />
 						<c:simple-property displayName="Start Time"
 							name="start-time" type="string" description="Time when request submitted" />
-						<c:simple-property displayName="Last ping time"
+						<c:simple-property displayName="Command"
 							name="command" type="string" description="SQL Command" />
 						<c:simple-property displayName="Connector level request?"
 							name="source-request" type="string"
@@ -202,7 +202,7 @@
 				<c:simple-property displayName="Session ID" name="session-id"
 					type="string" required="true"
 					description="The ID of the session that the request to cancel is associated with" />
-				<c:simple-property displayName="Request ID" name="request-id"
+				<c:simple-property displayName="Request ID" name="execution-id"
 					type="long" required="true" description="The ID of the request to cancel" />
 			</parameters>
 		</operation>
@@ -641,7 +641,7 @@
 				</results>
 			</operation>
 
-			<operation name="getRequestsUsingVDB" displayName="View VDB requests"
+			<operation name="list-requests-per-vdb" displayName="View VDB requests"
 				description="Get current requests executing against this VDB">
 				<results>
 
@@ -650,24 +650,21 @@
 						required="false">
 						<c:map-property name="map">
 							<c:simple-property displayName="Request ID"
-								name="request-id" type="string" description="The request identifier" />
+								name="execution-id" type="string" description="The request identifier" />
 							<c:simple-property displayName="Session ID"
 								name="session-id" type="string" description="Session identifier" />
-							<c:simple-property displayName="Execution ID"
-								name="execution-id" type="string" description="Unique Identifier for Request" />
 							<c:simple-property displayName="Start Time"
-								name="getStartTime" type="string" description="Time when request submitted" />
-							<c:simple-property displayName="Processing Time"
-								name="processing-time" type="string" description="Processing time for the request" />
-							<c:simple-property displayName="Last ping time"
-								name="get-command" type="string" description="SQL Command" />
+								name="start-time" type="string" description="Time when request submitted" />
+							<c:simple-property displayName="Command"
+								name="command" type="string" description="SQL Command" />
 							<c:simple-property displayName="Connector level request?"
 								name="source-request" type="string"
 								description="True if this is a connector level request" />
 							<c:simple-property displayName="Node ID" name="node-id"
 								type="string" description="The node identifier" />
 							<c:simple-property displayName="Transaction identifier"
-								name="xid" type="string" description="Transaction XID if a transaction is involved" />
+								name="transaction-id" type="string"
+								description="Transaction XID if a transaction is involved" />
 						</c:map-property>
 					</c:list-property>
 				</results>
