@@ -6,9 +6,6 @@
     	<groupId>org.jboss.integration-platform</groupId>
     	<artifactId>jboss-integration-platform-parent</artifactId>
     	<version>6.0.0.CR9</version>	
-<!--        <groupId>org.jboss.teiid</groupId>
-        <artifactId>teiid-parent</artifactId>
-        <version>8.7.0.Final</version> -->
 	</parent>
 
 	<groupId>org.jboss.teiid.rhq</groupId>
@@ -91,12 +88,10 @@
 
 	<properties>
         <version.org.jboss.integration-platform>6.0.0.CR9</version.org.jboss.integration-platform>
-<!--        <jbossas-version>7.2.0.Final</jbossas-version> -->
 
 		<jopr.jboss.as7.plugin.version>4.4.0</jopr.jboss.as7.plugin.version>
 		<org.rhq.version>4.4.0</org.rhq.version>
 		<version.teiid>8.7.0.Final</version.teiid>
-		<!--commons.logging.version>1.1</commons.logging.version-->
 		<jboss-embeddable-ejb3.version>1.0.0.Alpha9</jboss-embeddable-ejb3.version>
 
 	</properties>
