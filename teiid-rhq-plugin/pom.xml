@@ -51,15 +51,14 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+		</dependency>
+		
+		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 		</dependency>
-
-		<!-- <dependency> <groupId>commons-logging</groupId> <artifactId>commons-logging</artifactId> 
-			<scope>provided</scope> </dependency> <dependency> <groupId>org.jboss.teiid</groupId> 
-			<artifactId>teiid-client</artifactId> <scope>provided</scope> </dependency> 
-			<dependency> <groupId>org.jboss.teiid</groupId> <artifactId>teiid-common-core</artifactId> 
-			</dependency> -->
 
 		<dependency>
 			<groupId>commons-logging</groupId>
