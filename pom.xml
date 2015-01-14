@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>teiid-rhq-parent</artifactId>
 		<groupId>org.jboss.teiid.rhq</groupId>
-		<version>2.2.0-SNAPSHOT</version>
+		<version>2.1.0</version>
 		<relativePath>teiid-rhq-parent/pom.xml</relativePath>
 	</parent>
 
