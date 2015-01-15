@@ -95,6 +95,7 @@ public class DataRoleDiscoveryComponent implements ResourceDiscoveryComponent {
 					 "dataPermissionsList");
 			 configuration.put(dataPermissionsList);
 			 List<Map<String, Object>> dataPermissions = (List<Map<String, Object>> ) policy.get(DataRoleComponent.DATA_PERMISSIONS);
+			 if (dataPermissions==null) return discoveredResources;
 			 if (dataPermissions != null) {
 				 for (Map<String, Object> dataPermission : dataPermissions) {
 					 PropertyMap dataPermissionsMap = new PropertyMap(

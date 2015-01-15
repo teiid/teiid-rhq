@@ -161,13 +161,13 @@
 		<operation name="terminate-session" displayName="Terminate Session"
 			description="Terminate a specified session">
 			<parameters>
-				<c:simple-property displayName="SessionID" name="session-id"
+				<c:simple-property displayName="Session ID" name="session-id"
 					type="string" required="true" description="The ID of the session to terminate" />
 			</parameters>
 		</operation>
 
 
-		<operation name="list-requests" displayName="View current equests"
+		<operation name="list-requests" displayName="View current Requests"
 			description="Get current requests executing against this Teiid instance">
 			<results>
 
@@ -196,7 +196,7 @@
 			</results>
 		</operation>
 
-		<operation name="cancel-request" displayName="Terminate request"
+		<operation name="cancel-request" displayName="Terminate Request"
 			description="Terminate the processing of a query and its source queries">
 			<parameters>
 				<c:simple-property displayName="Session ID" name="session-id"
