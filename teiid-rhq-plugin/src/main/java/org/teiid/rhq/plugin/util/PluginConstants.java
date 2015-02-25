@@ -278,7 +278,7 @@ public interface PluginConstants {
 
 			public final static String FIELD_LIST = "fieldList"; //$NON-NLS-1$
 			public final static String TRANSACTION_ID = "transaction-id"; //$NON-NLS-1$
-			public final static String REQUEST_ID = "request-id"; //$NON-NLS-1$
+			public final static String REQUEST_ID = "execution-id"; //$NON-NLS-1$
 			public final static String SESSION_ID = "session-id"; //$NON-NLS-1$
 			public final static String VDB_URL = "vdbUrl"; //$NON-NLS-1$
 			public final static String VDB_DEPLOY_NAME = "vdbDeployName"; //$NON-NLS-1$
