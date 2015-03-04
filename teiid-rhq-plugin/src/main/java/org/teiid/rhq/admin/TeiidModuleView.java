@@ -418,7 +418,7 @@ public class TeiidModuleView implements PluginConstants {
 
 		Address address = DmrUtil.getTeiidAddress();
 		Result result;
-		if (vdbName!=null){
+		if (vdbName==null){
 			result = executeOperation(connection,
 					Platform.Operations.GET_REQUESTS, address, null);
 		}else{
