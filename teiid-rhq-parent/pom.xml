@@ -4,7 +4,7 @@
 	<parent>
     	<groupId>org.jboss.integration-platform</groupId>
     	<artifactId>jboss-integration-platform-parent</artifactId>
-    	<version>6.0.0.CR25</version>
+    	<version>6.0.0.CR26</version>
     	<relativePath></relativePath>	
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -88,7 +88,7 @@
 	</developers>
 
 	<properties>
-        <version.org.jboss.integration-platform>6.0.0.CR25</version.org.jboss.integration-platform>
+        <version.org.jboss.integration-platform>6.0.0.CR26</version.org.jboss.integration-platform>
         <!--version.org.jboss.as>7.4.0.Final-redhat-4</version.org.jboss.as-->
 		<jopr.jboss.as7.plugin.version>4.4.0</jopr.jboss.as7.plugin.version>
 		<org.rhq.version>4.4.0</org.rhq.version>
