@@ -62,6 +62,7 @@ public class DataRoleDiscoveryComponent implements ResourceDiscoveryComponent {
 
 		// Get data roles from VDB
 		List<Map<String, Object>> dataPolicies = (List<Map<String, Object>>) vdbMap.get(VDBComponent.DATA_POLICIES);
+		if (dataPolicies == null) return discoveredResources;
 		for (Map<String, Object> policy : dataPolicies) {
 		     String dataRoleName = (String) policy.get(DataRoleComponent.POLICY_NAME);
 		     Boolean anyAuthenticated =  (Boolean) policy.get(DataRoleComponent.ANY_AUTHENTICATED);
