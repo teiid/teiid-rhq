@@ -5,8 +5,8 @@
 	<parent>
 		<groupId>org.jboss.teiid.rhq</groupId>
 		<artifactId>teiid-rhq-parent</artifactId>
-		<version>2.1.0</version>
-		<relativePath>../teiid-rhq-parent/pom.xml</relativePath>
+		<version>2.2.0</version>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
