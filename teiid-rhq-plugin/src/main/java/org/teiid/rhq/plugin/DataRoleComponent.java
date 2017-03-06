@@ -39,8 +39,10 @@ import org.rhq.core.domain.measurement.MeasurementReport;
 import org.rhq.core.domain.measurement.MeasurementScheduleRequest;
 import org.rhq.core.pluginapi.configuration.ConfigurationFacet;
 import org.rhq.core.pluginapi.configuration.ConfigurationUpdateReport;
+import org.rhq.core.pluginapi.inventory.ResourceComponent;
 import org.rhq.core.pluginapi.inventory.ResourceContext;
 import org.rhq.modules.plugins.jbossas7.ASConnection;
+import org.rhq.modules.plugins.jbossas7.json.Address;
 import org.rhq.modules.plugins.jbossas7.json.Result;
 import org.teiid.rhq.admin.TeiidModuleView;
 import org.teiid.rhq.plugin.util.DmrUtil;
@@ -83,10 +85,18 @@ public class DataRoleComponent extends Facet {
 	public void start(ResourceContext context) {
 		this.resourceConfiguration = context.getPluginConfiguration();
 		this.componentType = PluginConstants.ComponentType.DATA_ROLE.NAME;
-		vdbName = ((VDBComponent)context.getParentResourceComponent()).getResourceConfiguration().getSimple("name")
+		VDBComponent parentComponent = (VDBComponent)context.getParentResourceComponent();
+		vdbName = parentComponent.getResourceConfiguration().getSimple("name")
 				.getStringValue();
-		vdbVersion = ((VDBComponent)context.getParentResourceComponent()).getResourceConfiguration().getSimple("version")
+		vdbVersion = parentComponent.getResourceConfiguration().getSimple("version")
 		.getStringValue();
+		
+		Address parentAddress = parentComponent.getAddress();
+		String parentPath = parentAddress.getPath();
+		
+		//Need path to servers, not server configs.
+		address = new Address(parentPath.replaceAll("server-config", "server"));
+		
 		try {
 			super.start(context);
 			}catch (Exception e){
@@ -156,7 +166,7 @@ public class DataRoleComponent extends Facet {
 	
 		//Now update role names by removing existing and adding list values from configuration as new	
 		Map<String, Object> vdbMap = VDBComponent.getVdbMap(getASConnection(), vdbName,
-				vdbVersion);
+				vdbVersion, address);
 		
 		// Get data roles from VDB and find the current role
 		List<Map<String, Object>> dataPolicies = (List<Map<String, Object>>) vdbMap.get(VDBComponent.DATA_POLICIES);
@@ -204,7 +214,7 @@ public class DataRoleComponent extends Facet {
 
 		Map<String, Object> vdbMap = VDBComponent.getVdbMap(connection, parentComponent.deploymentName,
 				parentComponent.getResourceConfiguration().getSimple("version")
-						.getStringValue());
+						.getStringValue(), address);
 
 		// Get data roles from VDB
 		List<Map<String, Object>> dataPolicies = (List<Map<String, Object>>) vdbMap.get(VDBComponent.DATA_POLICIES);

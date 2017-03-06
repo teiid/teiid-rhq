@@ -77,8 +77,8 @@
 		singleton="true">
 
 		<runs-inside>
-			<parent-resource-type name="JBossAS7 Standalone Server"
-				plugin="JBossAS7" />
+			<parent-resource-type name="JBossAS7 Standalone Server" plugin="JBossAS7" />
+                        <parent-resource-type name="Managed Server" plugin="JBossAS7"/>
 		</runs-inside>
 
 		<operation name="list-long-running-requests" displayName="View current long running queries"

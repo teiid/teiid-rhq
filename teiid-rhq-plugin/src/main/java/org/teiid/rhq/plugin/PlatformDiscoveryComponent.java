@@ -37,7 +37,6 @@ import org.rhq.modules.plugins.jbossas7.ASConnection;
 import org.rhq.modules.plugins.jbossas7.BaseComponent;
 import org.rhq.modules.plugins.jbossas7.json.Address;
 import org.rhq.modules.plugins.jbossas7.json.ReadAttribute;
-import org.rhq.modules.plugins.jbossas7.json.ReadChildrenNames;
 import org.rhq.modules.plugins.jbossas7.json.ReadResource;
 import org.rhq.modules.plugins.jbossas7.json.Result;
 import org.teiid.rhq.plugin.util.DmrUtil;
@@ -77,11 +76,17 @@ public class PlatformDiscoveryComponent implements
 				DeserializationConfig.Feature.READ_ENUMS_USING_TO_STRING, true);
 
 		BaseComponent parentComponent = context.getParentResourceComponent();
+		String parentPath = parentComponent.getAddress().getPath();
+		
+		//Need path to servers, not server configs.
+		Address fullAddress = new Address(parentPath.replaceAll("server-config", "server"));
 		ASConnection connection = parentComponent.getASConnection();
 		Configuration config = context.getDefaultPluginConfiguration();
-
+		
+		//Get teiid subsystem address
 		Address addr = DmrUtil.getTeiidAddress();
-		Result result = connection.execute(new ReadResource(addr));
+		fullAddress.add(addr);
+		Result result = connection.execute(new ReadResource(fullAddress));
 		
 		if (result.isSuccess()) {
 			

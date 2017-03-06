@@ -51,7 +51,6 @@ import org.teiid.rhq.admin.TeiidModuleView;
 import org.teiid.rhq.plugin.objects.ConfigurationWriteDelegate;
 import org.teiid.rhq.plugin.objects.ExecutedOperationResultImpl;
 import org.teiid.rhq.plugin.objects.ExecutedResult;
-import org.teiid.rhq.plugin.util.DmrUtil;
 import org.teiid.rhq.plugin.util.PluginConstants;
 
 /**
@@ -136,10 +135,9 @@ public abstract class Facet extends BaseComponent<BaseComponent<?>> implements
 		resourceContext = context;
 		deploymentName = context.getResourceKey();
         pluginConfiguration = context.getPluginConfiguration();
-        address = DmrUtil.getTeiidAddress();
         key = context.getResourceKey();
 	}
-
+	
 	/**
 	 * This is called when the component is being stopped, usually due to the
 	 * plugin container shutting down. You can perform some cleanup here; though
@@ -201,11 +199,11 @@ public abstract class Facet extends BaseComponent<BaseComponent<?>> implements
 	}
 
 	protected void execute(final ASConnection connection,
-			final ExecutedResult result, final Map<String, Object> valueMap) {
+			final ExecutedResult result, final Map<String, Object> valueMap, Address teiidAddress) {
 		TeiidModuleView dqp = new TeiidModuleView();
 
 		try {
-			dqp.executeOperation(connection, result, valueMap);
+			dqp.executeOperation(connection, result, valueMap, teiidAddress);
 		} catch (Exception e) {
 			new RuntimeException(e);
 		}
@@ -266,7 +264,7 @@ public abstract class Facet extends BaseComponent<BaseComponent<?>> implements
 
 		setOperationArguments(name, configuration, valueMap);
 
-		execute(getASConnection(), result, valueMap);
+		execute(getASConnection(), result, valueMap, this.address);
 
 		return ((ExecutedOperationResultImpl) result).getOperationResult();
 

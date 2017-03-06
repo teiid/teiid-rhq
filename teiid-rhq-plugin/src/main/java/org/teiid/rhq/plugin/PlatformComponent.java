@@ -37,9 +37,12 @@ import org.rhq.core.domain.measurement.MeasurementReport;
 import org.rhq.core.domain.measurement.MeasurementScheduleRequest;
 import org.rhq.core.pluginapi.configuration.ConfigurationFacet;
 import org.rhq.core.pluginapi.configuration.ConfigurationUpdateReport;
+import org.rhq.core.pluginapi.inventory.ResourceComponent;
 import org.rhq.core.pluginapi.inventory.ResourceContext;
 import org.rhq.modules.plugins.jbossas7.ASConnection;
 import org.rhq.modules.plugins.jbossas7.BaseComponent;
+import org.rhq.modules.plugins.jbossas7.ManagedASComponent;
+import org.rhq.modules.plugins.jbossas7.StandaloneASComponent;
 import org.rhq.modules.plugins.jbossas7.json.Address;
 import org.rhq.modules.plugins.jbossas7.json.ReadResource;
 import org.rhq.modules.plugins.jbossas7.json.Result;
@@ -58,13 +61,30 @@ public class PlatformComponent extends Facet {
 	public static final String DOT = ".";
 	private final Log LOG = LogFactory.getLog(PluginConstants.DEFAULT_LOGGER_CATEGORY);
 	public static final String DISPLAY_PREVIEW_VDBS = "displayPreviewVDBS";
+	private ResourceContext context;
 
 	@Override
 	public void start(ResourceContext context) {
 		this.setComponentName(context.getPluginConfiguration().getSimpleValue(	"name", null)); //$NON-NLS-1$
 		this.resourceConfiguration = context.getPluginConfiguration();
+		this.context = context;
+		ResourceComponent parentComponent = context.getParentResourceComponent();
+		String parentPath;
+		if (parentComponent instanceof ManagedASComponent){
+			Address parentAddress = ((ManagedASComponent)parentComponent).getAddress();
+			parentPath = parentAddress.getPath();
+		}else{
+			Address parentAddress = ((StandaloneASComponent)parentComponent).getAddress();
+			parentPath = parentAddress.getPath();
+		}
 		
+		//Need path to servers, not server configs.
+		Address fullAddress = new Address(parentPath.replaceAll("server-config", "server"));
 		
+		//Get teiid subsystem address
+		Address addr = DmrUtil.getTeiidAddress();
+		fullAddress.add(addr);
+		address = fullAddress;
 		try {
 			super.start(context);
 			}catch (Exception e){
@@ -84,7 +104,7 @@ public class PlatformComponent extends Facet {
 	@Override
 	public AvailabilityType getAvailability() {
 
-		Address address = DmrUtil.getTeiidAddress();
+	
 		Result result;
 		result = getASConnection().execute(new ReadResource(address));
 		return (result.isSuccess()) ? AvailabilityType.UP: AvailabilityType.DOWN;
@@ -124,7 +144,7 @@ public class PlatformComponent extends Facet {
 
 				Object metric = view.getMetric(getASConnection(),
 						getComponentType(), this.getComponentIdentifier(),
-						name, valueMap);
+						name, valueMap, address);
 
 				if (metric instanceof Double) {
 					report.addData(new MeasurementDataNumeric(request, (Double) metric));
@@ -134,6 +154,9 @@ public class PlatformComponent extends Facet {
 				}
 				else if (metric instanceof Long){
 					report.addData(new MeasurementDataNumeric(request, new Double(((Long)metric).longValue())));
+				}
+				else if (metric instanceof String){
+					report.addData(new MeasurementDataNumeric(request, new Double(((String)metric))));
 				}
 				else {
 					LOG.error("Metric value must be a numeric value"); //$NON-NLS-1$
@@ -200,7 +223,7 @@ public class PlatformComponent extends Facet {
 
 		// Get all Teiid base resource properties
 		Result result = null;
-		result = getASConnection().execute(new ReadResource(DmrUtil.getTeiidAddress()));
+		result = getASConnection().execute(new ReadResource(address));
 		LinkedHashMap resultCollection = null;
 		
 		if (result.isSuccess()){
@@ -216,7 +239,9 @@ public class PlatformComponent extends Facet {
 		}
 		
 		//Now get JDBC Transport properties
-		result = getASConnection().execute(new ReadResource(DmrUtil.getJDBCTransportAddress()));
+		Address jdbcAddress = new Address(address.getPath());
+		jdbcAddress.add(DmrUtil.getJDBCTransportAddress());
+		result = getASConnection().execute(new ReadResource(jdbcAddress));
 		
 		if (result.isSuccess()){
 			resultCollection = (LinkedHashMap)result.getResult();
@@ -231,7 +256,9 @@ public class PlatformComponent extends Facet {
 		}
 		
 		//Now get ODBC Transport properties
-		result = getASConnection().execute(new ReadResource(DmrUtil.getJDBCTransportAddress()));
+		Address odbcAddress = new Address(address.getPath());
+		odbcAddress.add(DmrUtil.getODBCTransportAddress());
+		result = getASConnection().execute(new ReadResource(odbcAddress));
 		
 		if (result.isSuccess()){
 			resultCollection = (LinkedHashMap)result.getResult();

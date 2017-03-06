@@ -30,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.rhq.core.pluginapi.inventory.DiscoveredResourceDetails;
 import org.rhq.core.pluginapi.inventory.InvalidPluginConfigurationException;
+import org.rhq.core.pluginapi.inventory.ResourceComponent;
 import org.rhq.core.pluginapi.inventory.ResourceDiscoveryComponent;
 import org.rhq.core.pluginapi.inventory.ResourceDiscoveryContext;
 import org.rhq.modules.plugins.jbossas7.ASConnection;
@@ -55,8 +56,15 @@ public class TranslatorDiscoveryComponent implements ResourceDiscoveryComponent 
 		ASConnection connection = ((PlatformComponent) discoveryContext
 				.getParentResourceComponent()).getASConnection();
 		
-		Address addr = DmrUtil.getTeiidAddress();
-		Operation op = new Operation(Platform.Operations.lIST_TRANSLATORS, addr);
+	  	ResourceComponent parentComponent = ((PlatformComponent) discoveryContext
+				.getParentResourceComponent());
+	  	
+	  	String parentPath = ((PlatformComponent)parentComponent).getAddress().getPath();
+		
+		//Need path to servers, not server configs.
+		Address fullAddress = new Address(parentPath.replaceAll("server-config", "server"));
+		
+		Operation op = new Operation(Platform.Operations.lIST_TRANSLATORS, fullAddress);
 		Result result = connection.execute(op);
 		ArrayList<LinkedHashMap<String, Object>> translatorlist = (ArrayList<LinkedHashMap<String, Object>>) result.getResult();
 	
