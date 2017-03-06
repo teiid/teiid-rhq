@@ -211,7 +211,7 @@ public class ConfigurationWriteDelegate implements ConfigurationFacet {
 			additionalProperties.put(VDBComponent.VDBNAME, getPropertiesMap().get(VDB.NAME));
 			additionalProperties.put(VDBComponent.VERSION, getPropertiesMap().get(VDB.VERSION));
 			additionalProperties.put(VDBComponent.CONNECTIONTYPE, ((PropertySimple)prop).getStringValue());
-			TeiidModuleView.executeOperation(connection, VDB.Operations.CHANGE_VDB_CONN_TYPE, DmrUtil.getTeiidAddress(), additionalProperties);
+			TeiidModuleView.executeOperation(connection, VDB.Operations.CHANGE_VDB_CONN_TYPE, baseAddress, additionalProperties);
 		}else if (propDefName.equals("sourceName") || propDefName.equals("translatorName") || propDefName.equals("jndiName")){
 			//Skip these. These where updated via an operation
 		}else{

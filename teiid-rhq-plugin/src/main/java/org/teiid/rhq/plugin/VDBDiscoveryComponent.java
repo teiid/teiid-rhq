@@ -33,9 +33,11 @@ import org.rhq.core.domain.configuration.Configuration;
 import org.rhq.core.domain.configuration.PropertySimple;
 import org.rhq.core.pluginapi.inventory.DiscoveredResourceDetails;
 import org.rhq.core.pluginapi.inventory.InvalidPluginConfigurationException;
+import org.rhq.core.pluginapi.inventory.ResourceComponent;
 import org.rhq.core.pluginapi.inventory.ResourceDiscoveryComponent;
 import org.rhq.core.pluginapi.inventory.ResourceDiscoveryContext;
 import org.rhq.modules.plugins.jbossas7.ASConnection;
+import org.rhq.modules.plugins.jbossas7.BaseComponent;
 import org.rhq.modules.plugins.jbossas7.json.Address;
 import org.rhq.modules.plugins.jbossas7.json.Operation;
 import org.rhq.modules.plugins.jbossas7.json.Result;
@@ -58,10 +60,22 @@ public class VDBDiscoveryComponent implements ResourceDiscoveryComponent {
 		Set<DiscoveredResourceDetails> discoveredResources = new HashSet<DiscoveredResourceDetails>();
 		ASConnection connection = ((PlatformComponent) discoveryContext
 				.getParentResourceComponent()).getASConnection();
-
 		
-		Address addr = DmrUtil.getTeiidAddress();
-		Operation op = new Operation(Platform.Operations.LIST_VDBS, addr);
+	  	ResourceComponent parentComponent = ((PlatformComponent) discoveryContext
+				.getParentResourceComponent());
+	  	
+	  	String parentPath = ((PlatformComponent)parentComponent).getAddress().getPath();
+		
+		//Need path to servers, not server configs.
+		Address fullAddress = new Address(parentPath.replaceAll("server-config", "server"));
+		
+		//Get teiid subsystem address
+		if (!fullAddress.getPath().contains("subsystem")){
+			Address addr = DmrUtil.getTeiidAddress();
+			fullAddress.add(addr); 
+		}
+		
+		Operation op = new Operation(Platform.Operations.LIST_VDBS, fullAddress);
 		Result result = connection.execute(op);
 		ArrayList<LinkedHashMap> list = (ArrayList<LinkedHashMap>) result.getResult();
 		

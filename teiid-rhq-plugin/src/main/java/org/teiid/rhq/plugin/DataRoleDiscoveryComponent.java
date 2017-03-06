@@ -34,9 +34,12 @@ import org.rhq.core.domain.configuration.PropertyMap;
 import org.rhq.core.domain.configuration.PropertySimple;
 import org.rhq.core.pluginapi.inventory.DiscoveredResourceDetails;
 import org.rhq.core.pluginapi.inventory.InvalidPluginConfigurationException;
+import org.rhq.core.pluginapi.inventory.ResourceComponent;
 import org.rhq.core.pluginapi.inventory.ResourceDiscoveryComponent;
 import org.rhq.core.pluginapi.inventory.ResourceDiscoveryContext;
 import org.rhq.modules.plugins.jbossas7.ASConnection;
+import org.rhq.modules.plugins.jbossas7.json.Address;
+import org.teiid.rhq.plugin.util.DmrUtil;
 import org.teiid.rhq.plugin.util.PluginConstants;
 
 /**
@@ -55,10 +58,15 @@ public class DataRoleDiscoveryComponent implements ResourceDiscoveryComponent {
 		VDBComponent parentComponent = (VDBComponent) discoveryContext
 				.getParentResourceComponent();
 		ASConnection connection = parentComponent.getASConnection();
-
+		
+	  	String parentPath = ((VDBComponent)parentComponent).getAddress().getPath();
+		
+		//Need path to servers, not server configs.
+		Address fullAddress = new Address(parentPath.replaceAll("server-config", "server"));
+		
 		Map<String, Object> vdbMap = VDBComponent.getVdbMap(connection, parentComponent.deploymentName,
 				parentComponent.getResourceConfiguration().getSimple("version")
-						.getStringValue());
+						.getStringValue(), fullAddress);
 
 		// Get data roles from VDB
 		List<Map<String, Object>> dataPolicies = (List<Map<String, Object>>) vdbMap.get(VDBComponent.DATA_POLICIES);
