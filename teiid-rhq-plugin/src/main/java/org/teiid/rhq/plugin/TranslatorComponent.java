@@ -63,6 +63,13 @@ public class TranslatorComponent extends Facet {
 	public void start(ResourceContext context) {
 		this.setComponentName(context.getPluginConfiguration().getSimpleValue(	"name", null));
 		this.resourceConfiguration=context.getPluginConfiguration();
+		PlatformComponent parentComponent = (PlatformComponent)context.getParentResourceComponent();
+		Address parentAddress = parentComponent.getAddress();
+		String parentPath = parentAddress.getPath();
+		
+		//Need path to servers, not server configs.
+		address = new Address(parentPath.replaceAll("server-config", "server"));
+		
 		try {
 		super.start(context);
 		}catch (Exception e){
@@ -116,8 +123,7 @@ public class TranslatorComponent extends Facet {
 	@Override
 	public Configuration loadResourceConfiguration() {
 
-		Address addr = DmrUtil.getTeiidAddress();
-		Operation op = new Operation(Platform.Operations.lIST_TRANSLATORS, addr);
+		Operation op = new Operation(Platform.Operations.lIST_TRANSLATORS, address);
 		Result result = getASConnection().execute(op);
 		ArrayList<LinkedHashMap<String, Object>> translatorlist = (ArrayList<LinkedHashMap<String, Object>>) result.getResult();
 		Configuration configuration = null;

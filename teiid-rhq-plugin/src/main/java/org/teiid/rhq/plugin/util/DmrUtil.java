@@ -37,20 +37,17 @@ public final class DmrUtil {
 	public static String JDBC = "jdbc";
 	
 	public static Address getTeiidAddress() {
-		Address addr = new Address(TEIID_SUBSYSTEM);
-		addr.add("subsystem", TEIID_SUBSYSTEM);
+		Address addr = new Address("subsystem", TEIID_SUBSYSTEM);
 		return addr;
 	}
 	
 	public static Address getJDBCTransportAddress() {
-		Address jdbc = new Address(getTeiidAddress());
-		jdbc.add(TRANSPORT, JDBC);
+		Address jdbc = new Address(TRANSPORT, JDBC);
 		return jdbc;
 	}
 	
 	public static Address getODBCTransportAddress() {
-		Address odbc = new Address(getTeiidAddress());
-		odbc.add(TRANSPORT, ODBC);
+		Address odbc = new Address(TRANSPORT, ODBC);
 		return odbc;
 	}
 

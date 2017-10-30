@@ -114,6 +114,13 @@ public class VDBComponent extends Facet {
 		this.resourceConfiguration = context.getPluginConfiguration();
 		this.componentType = PluginConstants.ComponentType.VDB.NAME;
 		
+		PlatformComponent parentComponent = (PlatformComponent)context.getParentResourceComponent();
+		Address parentAddress = parentComponent.getAddress();
+		String parentPath = parentAddress.getPath();
+		
+		//Need path to servers, not server configs.
+		address = new Address(parentPath.replaceAll("server-config", "server"));
+		
 		try {
 			super.start(context);
 			}catch (Exception e){
@@ -165,7 +172,7 @@ public class VDBComponent extends Facet {
 	 */
 	@Override
 	public AvailabilityType getAvailability() {
-		Map<String, Object> map = getVdbMap(getASConnection(), this.deploymentName, this.resourceConfiguration.getSimple("version").getStringValue());
+		Map<String, Object> map = getVdbMap(getASConnection(), this.deploymentName, this.resourceConfiguration.getSimple("version").getStringValue(), address);
 		String status = (String) map.get(STATUS);
 		if (status.equals("ACTIVE")) {
 			return AvailabilityType.UP;
@@ -197,7 +204,7 @@ public class VDBComponent extends Facet {
 
 			Object metricReturnObject = view.getMetric(getASConnection(),
 					getComponentType(), this.getComponentIdentifier(), name,
-					valueMap);
+					valueMap, address);
 
 			try {
 				if (request.getName().equals(
@@ -334,7 +341,7 @@ public class VDBComponent extends Facet {
 	@Override
 	public Configuration loadResourceConfiguration() {
 		
-		Map<String, Object> map = getVdbMap(getASConnection(), this.deploymentName, this.resourceConfiguration.getSimple("version").getStringValue());
+		Map<String, Object> map = getVdbMap(getASConnection(), this.deploymentName, this.resourceConfiguration.getSimple("version").getStringValue(), address);
 		
 		String vdbName = (String) map.get(VDBNAME);
 		Integer vdbVersion = (Integer) map.get(VERSION);
@@ -366,9 +373,8 @@ public class VDBComponent extends Facet {
 
 	}
 
-	public static Map<String, Object> getVdbMap(ASConnection connection,String vdbName, String vdbVersion) {
-		Address addr = DmrUtil.getTeiidAddress();
-		org.rhq.modules.plugins.jbossas7.json.Operation op = new org.rhq.modules.plugins.jbossas7.json.Operation(Platform.Operations.GET_VDB, addr);
+	public static Map<String, Object> getVdbMap(ASConnection connection,String vdbName, String vdbVersion, Address teiidAddress) {
+		org.rhq.modules.plugins.jbossas7.json.Operation op = new org.rhq.modules.plugins.jbossas7.json.Operation(Platform.Operations.GET_VDB, teiidAddress);
 		Map<String, Object> additionalProperties = new HashMap<String, Object>();
 		additionalProperties.put(VDBNAME, vdbName);
 		additionalProperties.put(VERSION, vdbVersion);
